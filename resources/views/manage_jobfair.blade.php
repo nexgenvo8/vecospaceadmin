@@ -72,6 +72,28 @@
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
+                                    {{-- 🔍 Search Bar (Top) --}}
+                                    <form method="GET" action="{{ route('registration_list') }}" class="mb-3">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <input type="text" name="firstName" class="form-control"
+                                                    placeholder="First Name" value="{{ request('firstName') }}">
+                                            </div>
+                                            <div class="col-md-3">
+                                                <input type="text" name="lastName" class="form-control"
+                                                    placeholder="Last Name" value="{{ request('lastName') }}">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <button type="submit" class="btn btn-primary w-100">Search</button>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <a href="{{ route('registration_list') }}"
+                                                    class="btn btn-secondary w-100">Reset</a>
+                                            </div>
+                                        </div>
+
+                                    </form>
+                                    {{-- 🔍 End Search Bar --}}
                                     <div class="table-responsive">
                                         <table id="example" class="table table-bordered table-striped">
                                             <thead>
