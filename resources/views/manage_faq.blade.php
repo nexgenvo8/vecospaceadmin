@@ -11,7 +11,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Faqs-JMIvecospace</title>
+    <title>Faqs-SGTvecospace</title>
     @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -52,11 +52,17 @@
                         <div class="col-sm-6">
                             <h1>MANAGE FAQs</h1>
                         </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
+                        <div class="col-sm-6 text-right">
+                            <ol class="breadcrumb float-sm-right mb-1">
                                 <li class="breadcrumb-item"><a href="{{ route('index') }}">Home</a></li>
                                 <li class="breadcrumb-item active">FAQs</li>
-                            </ol>
+                            </ol><br>
+                            <div>
+                                <strong>
+                                    Total: {{ !empty($faqdata) ? count($faqdata) : 0 }}
+                                </strong>
+                            </div>
+
                         </div>
                     </div>
                 </div>

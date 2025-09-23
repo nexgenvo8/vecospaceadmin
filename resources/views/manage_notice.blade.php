@@ -11,7 +11,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Notice-JMIvecospace</title>
+    <title>Notice-SGTvecospace</title>
     @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
@@ -47,14 +47,21 @@
                         <div class="col-sm-6">
                             <h1>NOTICE LIST</h1>
                         </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
+                        <div class="col-sm-6 text-right">
+                            <ol class="breadcrumb float-sm-right mb-1">
                                 <li class="breadcrumb-item"><a href="{{ route('index') }}">Home</a></li>
-                                <li class="breadcrumb-item active">Notice</li>
-                            </ol>
+                                <li class="breadcrumb-item active">NOTICE LIST</li>
+                            </ol><br>
+                            <div>
+                                <strong>
+                                    Total: {{ !empty($notices) ? count($notices) : 0 }}
+                                </strong>
+                            </div>
+
                         </div>
                     </div>
-                </div><!-- /.container-fluid -->
+                </div>
+                <!-- /.container-fluid -->
             </section>
 
             <!-- Main content -->

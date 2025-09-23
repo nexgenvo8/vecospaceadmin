@@ -11,7 +11,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Permissions-List-JMIvecospace</title>
+    <title>Permissions-List-SGTvecospace</title>
     @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"

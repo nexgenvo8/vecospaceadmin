@@ -173,8 +173,8 @@
             <a href="{{ url('/index') }}" class="brand-link">
                 <a href="{{ url('/index') }}" class="brand-link">
                     <img src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/img/logo11.png') }}"
-                        alt="JMIVecospace Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                    <span class="brand-text font-weight fs-4 text-light">JMIVecospace</span>
+                        alt="SGTVecospace Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
+                    <span class="brand-text font-weight fs-4 text-light">SGTVecospace</span>
 
                 </a>
 

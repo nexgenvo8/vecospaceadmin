@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JMIvecospace| Login</title>
+    <title>SGTvecospace| Login</title>
 
     <link rel="shortcut icon" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/img/logo11.png') }}"
         type="image/x-icon">

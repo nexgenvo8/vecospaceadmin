@@ -11,7 +11,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Profile-JMIvecospace</title>
+    <title>Profile-SGTvecospace</title>
     @include('layout.favicon')
     <!-- Font Awesome -->
     <link rel="stylesheet"
