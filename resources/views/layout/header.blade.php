@@ -43,7 +43,7 @@
                 </li> --}}
 
                 <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" data-toggle="dropdown" href="#" aria-haspopup="true"
+                    <a class="nav-link" data-toggle="dropdown" href="#" aria-haspopup="true"
                         aria-expanded="false">
                         <i class="fas fa-user-circle"></i>
                     </a>
@@ -174,7 +174,8 @@
                 <a href="{{ url('/index') }}" class="brand-link">
                     <img src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/img/logo11.png') }}"
                         alt="JMIVecospace Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
-                    <span class="brand-text font-weight-light">JMIVecospace</span>
+                    <span class="brand-text font-weight fs-4 text-light">JMIVecospace</span>
+
                 </a>
 
                 <!-- Sidebar -->
@@ -185,9 +186,16 @@
                             <img src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/img/user2-160x160.jpg') }}"
                                 class="img-circle elevation-2" alt="User Image">
                         </div>
-                        <div class="info">
-                            <a href="#" class="d-block">MasterAdmin</a>
-                        </div>
+                        @if (!session()->has('admin') || session('admin') === null)
+                            <script>
+                                window.location.href = "{{ route('loginform') }}";
+                            </script>
+                        @else
+                            <div class="info">
+                                <a href="{{ route('index') }}" class="d-block">{{ session('admin')['name'] }}</a>
+                            </div>
+                        @endif
+
                     </div>
 
                     <!-- SidebarSearch Form -->
@@ -307,301 +315,427 @@
                                 </li>
                             </ul>
                         </li> --}}
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-globe-asia"></i>
-                                    <p>
-                                        Website Pages
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/manage-pages') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Pages</p>
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/manage-faqs') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage FAQ's</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-users"></i>
-                                    <p>
-                                        Users
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/subscription_list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Users</p>
-                                        </a>
-                                    </li>
-
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/import_userdata') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Import Users Data</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-user-friends"></i>
-                                    <p>
-                                        Group
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/group_list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Group</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-building"></i> <!-- Changed icon -->
-                                    <p>
-                                        Company Profiles
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/company_list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Company</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-newspaper"></i> <!-- Changed icon -->
-                                    <p>
-                                        Articles
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/article_list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Articles</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-calendar-alt"></i>
-                                    <!-- Updated icon for Event Calendar -->
-                                    <p>
-                                        Event Calendar
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/events_list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Event</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-tasks"></i> <!-- Changed icon -->
-                                    <p>
-                                        Projects & Internships
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/project_list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Projects</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-user-graduate"></i> <!-- Changed icon -->
-                                    <p>
-                                        Career Enhancers
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/career_enhancers') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Career Enhancers</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-microphone"></i> <!-- Changed icon -->
-                                    <p>
-                                        Guest Speakers & Trainers
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/talent_list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Guest Speakers & Trainers</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-briefcase"></i> <!-- Changed icon -->
-                                    <p>
-                                        Jobs
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/job_list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Jobs</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-pen"></i> <!-- Changed icon -->
-                                    <p>
-                                        Posts
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/posts_list') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Posts</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-phone"></i> <!-- Changed icon -->
-                                    <p>
-                                        Contacts
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/list_contact_query') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Contact Us</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-graduation-cap"></i> <!-- Changed icon -->
-                                    <p>
-                                        Course
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/manage_course') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Course</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-building"></i> <!-- Changed icon -->
-                                    <p>
-                                        Department
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/manage_department') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Department</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-building"></i> <!-- Changed icon -->
-                                    <p>
-                                        Notice Board
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/manage_notice') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Manage Notice Board</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
-                            <li class="nav-item">
-                                <a href="#" class="nav-link">
-                                    <i class="nav-icon fas fa-bullhorn"></i> <!-- Changed icon -->
-                                    <p>
-                                        Placement Registeration
-                                        <i class="right fas fa-angle-left"></i>
-                                    </p>
-                                </a>
-                                <ul class="nav nav-treeview">
-                                    <li class="nav-item">
-                                        <a href="{{ url('masteradmin/manage_jobfair') }}" class="nav-link">
-                                            <i class="far fa-circle nav-icon"></i>
-                                            <p>Placement Registeration</p>
-                                        </a>
-                                    </li>
-                                </ul>
-                            </li>
+                            {{-- @php
+                                function hasPermission($perm)
+                                {
+                                    return in_array($perm, session('permissions', []));
+                                }
+                            @endphp --}}
 
 
+                            </li>
+                            {{-- Sidebar / Header Navigation --}}
+                            <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu"
+                                data-accordion="false">
+
+                                @if (hasPermission('manage_menu_pages') || hasPermission('manage_faqs_pages'))
+                                    <li class="nav-item has-treeview" id="pages">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon fas fa-file-alt"></i>
+                                            <!-- Changed icon to represent "pages" -->
+                                            <p>
+                                                Manage Pages
+                                                <i class="right fas fa-angle-left"></i>
+                                            </p>
+                                        </a>
 
 
-                            {{-- <li class="nav-item">
+                                        <ul class="nav nav-treeview">
+                                            @if (hasPermission('manage_menu_pages'))
+                                                <li class="nav-item">
+                                                    <a href="{{ url('pages/manage-page') }}" class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>
+                                                        <p>Manage Pages</p>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                            @if (hasPermission('manage_faqs_pages'))
+                                                <li class="nav-item">
+                                                    <a href="{{ url('pages/manage-faqs') }}" class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>
+                                                        <p>Manage Faqs Pages</p>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </li>
+
+                                @endif
+
+                                {{-- Users --}}
+                                @if (hasPermission('subscription_list') || hasPermission('import_userdata'))
+                                    <li class="nav-item has-treeview" id="userMenu">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon fas fa-users"></i>
+                                            <p>
+                                                Users
+                                                <i class="right fas fa-angle-left"></i>
+                                            </p>
+                                        </a>
+
+                                        <ul class="nav nav-treeview">
+                                            @if (hasPermission('subscription_list'))
+                                                <li class="nav-item">
+                                                    <a href="{{ url('users/subscription_list') }}" class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>
+                                                        <p>Manage Users</p>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                            @if (hasPermission('import_userdata'))
+                                                <li class="nav-item">
+                                                    <a href="{{ url('user/import_userdata') }}" class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>
+                                                        <p>Import Users Data</p>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                        </ul>
+                                    </li>
+
+                                @endif
+
+                                {{-- Group --}}
+                                @if (hasPermission('group_list'))
+                                    <li class="nav-item has-treeview" id="groupMenu">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon fas fa-user-friends"></i>
+                                            <p>
+                                                Group
+                                                <i class="right fas fa-angle-left"></i>
+                                            </p>
+                                        </a>
+
+                                        <ul class="nav nav-treeview">
+                                            <li class="nav-item">
+                                                <a href="{{ url('group/group_list') }}" class="nav-link">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Manage Group</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
+
+                                {{-- Company Profiles --}}
+                                @if (hasPermission('company_list'))
+                                    <li class="nav-item has-treeview" id="companymenu">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon fas fa-building"></i>
+                                            <p>
+                                                Company Profiles
+                                                <i class="right fas fa-angle-left"></i>
+                                            </p>
+                                        </a>
+                                        <ul class="nav nav-treeview">
+                                            <li class="nav-item">
+                                                <a href="{{ url('company/company_list') }}" class="nav-link">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Manage Company</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
+
+                                {{-- Articles --}}
+                                @if (hasPermission('article_list'))
+                                    <li class="nav-item has-treeview" id="articlemenu">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon fas fa-newspaper"></i>
+                                            <p>
+                                                Articles
+                                                <i class="right fas fa-angle-left"></i>
+                                            </p>
+                                        </a>
+                                        <ul class="nav nav-treeview">
+                                            <li class="nav-item">
+                                                <a href="{{ url('article/article_list') }}" class="nav-link">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Manage Articles</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
+
+                                {{-- Event Calendar --}}
+                                @if (hasPermission('events_list'))
+                                    <li class="nav-item has-treeview" id="eventmenu">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon fas fa-calendar-alt"></i>
+                                            <p>
+                                                Event Calendar
+                                                <i class="right fas fa-angle-left"></i>
+                                            </p>
+                                        </a>
+                                        <ul class="nav nav-treeview">
+                                            <li class="nav-item">
+                                                <a href="{{ url('event/events_list') }}" class="nav-link">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Manage Event</p>
+                                                </a>
+                                            </li>
+                                        </ul>
+                                    </li>
+                                @endif
+
+                                {{-- Roles & Permissions --}}
+                                @if (hasPermission('roles_permissions_list'))
+                                    <li class="nav-item has-treeview" id="rolemenu">
+                                        <a href="#" class="nav-link">
+                                            <i class="nav-icon fas fa-user-shield"></i>
+                                            <p>
+                                                Role And Permissions
+                                                <i class="right fas fa-angle-left"></i>
+                                            </p>
+                                        </a>
+                                        <ul class="nav nav-treeview">
+                                            {{-- <li class="nav-item">
+                                                <a href="{{ url('masteradmin/roles-permissions') }}"
+                                                    class="nav-link">
+                                                    <i class="far fa-circle nav-icon"></i>
+                                                    <p>Roles and Permissions</p>
+                                                </a>
+                                            </li> --}}
+                                            @if (hasPermission('manage_permissions'))
+                                                <li class="nav-item">
+                                                    <a href="{{ url('/permissions_list') }}" class="nav-link">
+                                                        <i class="far fa-circle nav-icon"></i>
+                                                        <p>Roles & Permissions</p>
+                                                    </a>
+                                                </li>
+                                            @endif
+                                    </li>
+                                    {{-- @if (hasPermission('edit_roles_permissions'))
+                                        <li class="nav-item">
+                                            <a href="{{ url('/edit_roles_permissions') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Edit Permissions</p>
+                                            </a>
+                                        </li>
+                                    @endif --}}
+                            </ul>
+                            </li>
+                            @endif
+
+                            {{-- Projects & Internships --}}
+                            @if (hasPermission('project_list'))
+                                <li class="nav-item has-treeview" id="projectmenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-tasks"></i>
+                                        <p>
+                                            Projects & Internships
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('project/project_list') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Manage Projects</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            {{-- Career Enhancers --}}
+                            @if (hasPermission('career_enhancers'))
+                                <li class="nav-item has-treeview" id="careermenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-user-graduate"></i>
+                                        <p>
+                                            Career Enhancers
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('career/career_enhancers') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Manage Career Enhancers</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            {{-- Guest Speakers & Trainers --}}
+                            @if (hasPermission('talent_list'))
+                                <li class="nav-item has-treeview" id="guestmenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-microphone"></i>
+                                        <p>
+                                            Guest Speakers & Trainers
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('talent/talent_list') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Manage Guest Speakers & Trainers</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            {{-- Jobs --}}
+                            @if (hasPermission('job_list'))
+                                <li class="nav-item has-treeview" id="jobmenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-briefcase"></i>
+                                        <p>
+                                            Jobs
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('job/job_list') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Manage Jobs</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            {{-- Posts --}}
+                            @if (hasPermission('posts_list'))
+                                <li class="nav-item has-treeview" id="postmenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-pen"></i>
+                                        <p>
+                                            Posts
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('posts/posts_list') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Manage Posts</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            {{-- Contacts --}}
+                            @if (hasPermission('list_contact_query'))
+                                <li class="nav-item has-treeview" id="contactmenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-phone"></i>
+                                        <p>
+                                            Contacts
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('contactus/list_contact_query') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Manage Contact Us</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            {{-- Courses --}}
+                            @if (hasPermission('manage_course'))
+                                <li class="nav-item has-treeview" id="coursemenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-graduation-cap"></i>
+                                        <p>
+                                            Course
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('course/manage_course') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Manage Course</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            {{-- Department --}}
+                            @if (hasPermission('manage_department'))
+                                <li class="nav-item has-treeview" id="departmentmenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Department
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('department/manage_department') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Manage Department</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            {{-- Notice Board --}}
+                            @if (hasPermission('manage_notice'))
+                                <li class="nav-item has-treeview" id="noticeboardmenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-building"></i>
+                                        <p>
+                                            Notice Board
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('notice-board/manage_notice') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Manage Notice Board</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                            {{-- Placement Registration --}}
+                            @if (hasPermission('manage_jobfair'))
+                                <li class="nav-item has-treeview" id="registermenu">
+                                    <a href="#" class="nav-link">
+                                        <i class="nav-icon fas fa-bullhorn"></i>
+                                        <p>
+                                            Placement Registration
+                                            <i class="right fas fa-angle-left"></i>
+                                        </p>
+                                    </a>
+                                    <ul class="nav nav-treeview">
+                                        <li class="nav-item">
+                                            <a href="{{ url('register/manage_jobfair') }}" class="nav-link">
+                                                <i class="far fa-circle nav-icon"></i>
+                                                <p>Placement Registration</p>
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </li>
+                            @endif
+
+                        </ul>
+
+
+
+
+
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-tree"></i>
                                 <p>
@@ -660,7 +794,7 @@
                                 </li>
                             </ul>
                         </li> --}}
-                            {{-- <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-edit"></i>
                                 <p>
@@ -695,7 +829,7 @@
                                 </li>
                             </ul>
                         </li> --}}
-                            {{-- <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-table"></i>
                                 <p>
@@ -724,16 +858,16 @@
                                 </li>
                             </ul>
                         </li> --}}
-                            {{-- <li class="nav-header">EXAMPLES</li>
+                        {{-- <li class="nav-header">EXAMPLES</li>
                         <li class="nav-item"> --}}
-                            {{-- <a href="pages/calendar.html" class="nav-link">
+                        {{-- <a href="pages/calendar.html" class="nav-link">
                                 <i class="nav-icon far fa-calendar-alt"></i>
                                 <p>
                                     Calendar
                                     <span class="badge badge-info right">2</span>
                                 </p>
                             </a> --}}
-                            {{-- </li>
+                        {{-- </li>
                         <li class="nav-item">
                             <a href="pages/gallery.html" class="nav-link">
                                 <i class="nav-icon far fa-image"></i>
@@ -742,7 +876,7 @@
                                 </p>
                             </a>
                         </li> --}}
-                            {{-- <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="pages/kanban.html" class="nav-link">
                                 <i class="nav-icon fas fa-columns"></i>
                                 <p>
@@ -750,7 +884,7 @@
                                 </p>
                             </a>
                         </li> --}}
-                            {{-- <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon far fa-envelope"></i>
                                 <p>
@@ -779,7 +913,7 @@
                                 </li>
                             </ul>
                         </li> --}}
-                            {{-- <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-book"></i>
                                 <p>
@@ -850,7 +984,7 @@
                                 </li>
                             </ul>
                         </li> --}}
-                            {{-- <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon far fa-plus-square"></i>
                                 <p>
@@ -979,7 +1113,7 @@
                                 </li>
                             </ul>
                         </li> --}}
-                            {{-- <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="nav-icon fas fa-search"></i>
                                 <p>
@@ -1002,20 +1136,20 @@
                                 </li>
                             </ul>
                         </li> --}}
-                            {{-- <li class="nav-header">MISCELLANEOUS</li> --}}
-                            {{-- <li class="nav-item">
+                        {{-- <li class="nav-header">MISCELLANEOUS</li> --}}
+                        {{-- <li class="nav-item">
                             <a href="iframe.html" class="nav-link">
                                 <i class="nav-icon fas fa-ellipsis-h"></i>
                                 <p>Tabbed IFrame Plugin</p>
                             </a>
                         </li> --}}
-                            {{-- <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a href="https://adminlte.io/docs/3.1/" class="nav-link">
                                 <i class="nav-icon fas fa-file"></i>
                                 <p>Documentation</p>
                             </a>
                         </li> --}}
-                            {{-- <li class="nav-header">MULTI LEVEL EXAMPLE</li>
+                        {{-- <li class="nav-header">MULTI LEVEL EXAMPLE</li>
                         <li class="nav-item">
                             <a href="#" class="nav-link">
                                 <i class="fas fa-circle nav-icon"></i>
@@ -1105,3 +1239,73 @@
                 </div>
                 <!-- /.sidebar -->
         </aside>
+        <script>
+            document.querySelector('#pages > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('pages').classList.toggle('menu-open');
+            });
+            document.querySelector('#userMenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('userMenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#groupMenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('groupMenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#companymenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('companymenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#articlemenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('articlemenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#eventmenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('eventmenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#rolemenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('rolemenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#projectmenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('projectmenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#careermenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('careermenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#guestmenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('guestmenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#jobmenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('jobmenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#postmenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('postmenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#contactmenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('contactmenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#coursemenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('coursemenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#departmentmenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('departmentmenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#noticeboardmenu> .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('noticeboardmenu').classList.toggle('menu-open');
+            });
+            document.querySelector('#registermenu > .nav-link').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.getElementById('registermenu').classList.toggle('menu-open');
+            });
+        </script>

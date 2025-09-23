@@ -1,11 +1,18 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JMIVecospace | DataTables</title>
-
+    <title>Jobs-JMIvecospace</title>
+    @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -23,6 +30,9 @@
     <link rel="stylesheet" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/css/adminlte.min.css') }}">
 
 </head>
+<?php
+$websiteurl = env('WEBSITE_URL');
+?>
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -88,7 +98,7 @@
                                                                 class="btn btn-link p-0 m-0 align-baseline"
                                                                 data-toggle="modal"
                                                                 data-target="#statusModal{{ $job['id'] }}">
-                                                                @if ($job['status'] == 0)
+                                                                @if ($job['status'] == 1)
                                                                     <span class="badge badge-success">Active</span>
                                                                 @else
                                                                     <span class="badge badge-danger">Inactive</span>
@@ -152,13 +162,11 @@
                                                         </td>
 
                                                         <td>
-                                                            <a href="https://jmi.vecospace.com/view-job.html?id={{ $job['id'] ?? '' }}"
+                                                            <a href="<?php echo $websiteurl; ?>view-job.html?id=<?php echo encodeStr($job['id']); ?>"
                                                                 class="btn btn-primary btn-sm" target="_blank">
                                                                 Open
                                                             </a>
                                                         </td>
-
-
 
                                                     </tr>
                                                 @endforeach
@@ -191,7 +199,7 @@
         <!-- /.content -->
     </div>
     <!-- /.content-wrapper -->
-    @include('layout.header')
+    @include('layout.footer')
 
     <!-- Control Sidebar -->
     <aside class="control-sidebar control-sidebar-dark">

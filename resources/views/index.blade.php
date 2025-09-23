@@ -1,10 +1,21 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
+
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Dashboard</title>
+    <title> HOME-JMIvecospace</title>
+    <!-- Favicon -->
+    @include('layout.favicon')
 
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -36,8 +47,11 @@
     <!-- Summernote -->
     <link rel="stylesheet"
         href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/plugins/summernote/summernote-bs4.min.css') }}">
-</head>
 
+</head>
+<style>
+
+</style>
 @if (session('success'))
     <script>
         alert("{{ session('success') }}");
@@ -56,13 +70,13 @@
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1 class="m-0">Dashboard</h1>
+                            <h1 class="m-0">DASHBOARD</h1>
                         </div>
                         <!-- /.col -->
                         <div class="col-sm-6">
                             <ol class="breadcrumb float-sm-right">
                                 <li class="breadcrumb-item"><a href="{{ route('index') }}">Home</a></li>
-                                <li class="breadcrumb-item active">Dashboard v1</li>
+                                <li class="breadcrumb-item active">DASHBOARD</li>
                             </ol>
                         </div>
                         <!-- /.col -->
@@ -78,71 +92,146 @@
                 <div class="container-fluid">
                     <!-- Small boxes (Stat box) -->
                     <div class="row">
+                        <!-- User Registrations Card -->
                         <div class="col-lg-3 col-6">
-                            <!-- small box -->
-                            <div class="small-box bg-info">
+                            <div class="small-box bg-primary">
                                 <div class="inner">
-                                    <h3>150</h3>
-
-                                    <p>New Orders</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="ion ion-bag"></i>
-                                </div>
-                                <a href="#" class="small-box-footer">More info <i
-                                        class="fas fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
-                        <!-- ./col -->
-                        <div class="col-lg-3 col-6">
-                            <!-- small box -->
-                            <div class="small-box bg-success">
-                                <div class="inner">
-                                    <h3>53<sup style="font-size: 20px">%</sup></h3>
-
-                                    <p>Bounce Rate</p>
-                                </div>
-                                <div class="icon">
-                                    <i class="ion ion-stats-bars"></i>
-                                </div>
-                                <a href="#" class="small-box-footer">More info <i
-                                        class="fas fa-arrow-circle-right"></i></a>
-                            </div>
-                        </div>
-                        <!-- ./col -->
-                        <div class="col-lg-3 col-6">
-                            <!-- small box -->
-                            <div class="small-box bg-warning">
-                                <div class="inner">
-                                    <h3>44</h3>
-
+                                    <h3>{{ $totalRegisters ?? 0 }}</h3>
                                     <p>User Registrations</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="ion ion-person-add"></i>
+                                    <i class="fas fa-users"></i>
                                 </div>
-                                <a href="#" class="small-box-footer">More info <i
+                                <a href="{{ route('registration_list') }}" class="small-box-footer">More info <i
                                         class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
-                        <!-- ./col -->
-                        <div class="col-lg-3 col-6">
-                            <!-- small box -->
-                            <div class="small-box bg-danger">
-                                <div class="inner">
-                                    <h3>65</h3>
 
-                                    <p>Unique Visitors</p>
+                        <!-- Posts Card -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-success">
+                                <div class="inner">
+                                    <h3>{{ $totalPosts ?? 0 }}</h3>
+                                    <p>Posts</p>
                                 </div>
                                 <div class="icon">
-                                    <i class="ion ion-pie-graph"></i>
+                                    <i class="fas fa-pen-square"></i>
                                 </div>
-                                <a href="#" class="small-box-footer">More info <i
+                                <a href="{{ route('post_list') }}" class="small-box-footer">More info <i
                                         class="fas fa-arrow-circle-right"></i></a>
                             </div>
                         </div>
-                        <!-- ./col -->
+
+                        <!-- Departments Card -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-info">
+                                <div class="inner">
+                                    <h3>{{ $totalDepartments ?? 0 }}</h3>
+                                    <p>Departments</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-building"></i>
+                                </div>
+                                <a href="{{ route('manage_department') }}" class="small-box-footer">More info <i
+                                        class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Courses Card -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-indigo">
+                                <div class="inner">
+                                    <h3>{{ $totalCourses ?? 0 }}</h3>
+                                    <p>Courses</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <a href="{{ route('manage_course') }}" class="small-box-footer">More info <i
+                                        class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
                     </div>
+
+                    <div class="row">
+                        <!-- Students Card -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-secondary">
+                                <div class="inner">
+                                    <h3>{{ $userTypeSummary['Student'] ?? 0 }}</h3>
+                                    <p>Students</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="ion ion-person"></i>
+                                </div>
+                                <a href="{{ route('registration_list') }}" class="small-box-footer">More info <i
+                                        class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Faculty Card -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-dark">
+                                <div class="inner">
+                                    <h3>{{ $userTypeSummary['Faculty'] ?? 0 }}</h3>
+                                    <p>Faculty</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="ion ion-person-stalker"></i>
+                                </div>
+                                <a href="{{ route('registration_list') }}" class="small-box-footer">More info <i
+                                        class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Alumni Card -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-indigo"> <!-- Custom color if needed -->
+                                <div class="inner">
+                                    <h3>{{ $userTypeSummary['Alumni'] ?? 0 }}</h3>
+                                    <p>Alumni</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="ion ion-university"></i>
+                                </div>
+                                <a href="{{ route('registration_list') }}" class="small-box-footer">More info <i
+                                        class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Industry Professionals Card -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-teal"> <!-- Custom color if needed -->
+                                <div class="inner">
+                                    <h3>{{ $userTypeSummary['Industry Professional'] ?? 0 }}</h3>
+                                    <p>Industry Professionals</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="ion ion-briefcase"></i>
+                                </div>
+                                <a href="{{ route('registration_list') }}" class="small-box-footer">More info <i
+                                        class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+
+                        <!-- Career Enhancers / Service Providers Card -->
+                        <div class="col-lg-3 col-6">
+                            <div class="small-box bg-danger">
+                                <div class="inner">
+                                    <h3>{{ $userTypeSummary['Career Enhancer / Service Provider'] ?? 0 }}</h3>
+                                    <p>Career Enhancers / Service Providers</p>
+                                </div>
+                                <div class="icon">
+                                    <i class="ion ion-trophy"></i>
+                                </div>
+                                <a href="{{ route('registration_list') }}" class="small-box-footer">More info <i
+                                        class="fas fa-arrow-circle-right"></i></a>
+                            </div>
+                        </div>
+                    </div>
+
+
                     <!-- /.row -->
                     <!-- Main row -->
                     <div class="row">
@@ -715,7 +804,7 @@
             <!-- /.content -->
         </div>
         <!-- /.content-wrapper -->
-        @include('layout.header')
+        @include('layout.footer')
 
         <!-- Control Sidebar -->
         <aside class="control-sidebar control-sidebar-dark">
@@ -766,3 +855,8 @@
 </body>
 
 </html>
+{{-- <script>
+    setTimeout(function() {
+        window.location.href = "{{ route('login') }}";
+    }, 5 * 60 * 1000); // 5 minutes in milliseconds
+</script> --}}

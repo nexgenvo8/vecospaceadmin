@@ -4,9 +4,11 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Log in</title>
+    <title>JMIvecospace| Login</title>
 
-
+    <link rel="shortcut icon" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/img/logo11.png') }}"
+        type="image/x-icon">
+    <link rel="icon" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/img/logo11.png') }}" type="image/x-icon">
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -23,81 +25,113 @@
     <link rel="stylesheet" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/css/adminlte.min.css') }}">
 </head>
 @if ($errors->has('login_error'))
-    <div class="alert alert-danger">
+    <div class="flash-message flash-error">
         {{ $errors->first('login_error') }}
     </div>
 @elseif (session('error'))
-    <div class="alert alert-danger">{{ session('error') }}</div>
+    <div class="flash-message flash-error">{{ session('error') }}</div>
 @elseif (session('success'))
-    <div class="alert alert-success">{{ session('success') }}</div>
+    <div class="flash-message flash-success">{{ session('success') }}</div>
 @endif
 
+<style>
+    .flash-message {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        padding: 15px 25px;
+        border-radius: 8px;
+        font-weight: 500;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        z-index: 9999;
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: all 0.5s ease;
+    }
+
+    .flash-message.show {
+        opacity: 1;
+        transform: translateY(0);
+    }
+
+    .flash-success {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .flash-error {
+        background-color: #dc3545;
+        color: #fff;
+    }
+</style>
 
 
-<body class="hold-transition login-page">
+
+
+
+
+<body class="hold-transition login-page bg-light">
     <div class="login-box">
-        <div class="login-logo">
-            <a href="../../index2.html"><b>jmi</b>Vecospace</a>
+        <div class="login-logo mb-4">
+            <a href="#" class="h1 text-primary"><b>JMI</b>Vecospace</a>
         </div>
-        <!-- /.login-logo -->
-        <div class="card">
+
+        <div class="card shadow-lg rounded-lg">
             <div class="card-body login-card-body">
-                <p class="login-box-msg">Sign in to start your session</p>
+                <h4 class="text-center mb-4 font-weight-bold">Sign In to Your Account</h4>
 
                 <form method="POST" action="{{ route('submitLogin') }}">
                     @csrf
-                    <div class="input-group mb-3">
-                        <input type="text" class="form-control" name="userId" placeholder="User ID" required>
-                        <div class="input-group-append">
-                            <div class="input-group-text"><span class="fas fa-envelope"></span></div>
-                        </div>
-                    </div>
-                    <div class="input-group mb-3">
-                        <input type="password" class="form-control" name="password" placeholder="Password" required>
-                        <div class="input-group-append">
-                            <div class="input-group-text"><span class="fas fa-lock"></span></div>
-                        </div>
-                    </div>
-                    <div class="row">
-                        <div class="col-8">
-                            <div class="icheck-primary">
-                                <input type="checkbox" id="remember">
-                                <label for="remember">Remember Me</label>
+
+                    <div class="form-group">
+                        <label for="userId">User ID</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-user"></i></span>
                             </div>
-                        </div>
-                        <div class="col-4">
-                            <button type="submit" class="btn btn-primary btn-block">Sign In</button>
+                            <input type="text" class="form-control" id="userId" name="userId"
+                                placeholder="Enter your User ID" required>
                         </div>
                     </div>
+
+                    <div class="form-group">
+                        <label for="password">Password</label>
+                        <div class="input-group">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            </div>
+                            <input type="password" class="form-control" id="password" name="password"
+                                placeholder="Enter your Password" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group form-check">
+                        <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                        <label class="form-check-label" for="remember">Remember Me</label>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary btn-block font-weight-bold">Sign In</button>
                 </form>
 
+                <hr>
 
-
-
-
-                <div class="social-auth-links text-center mb-3">
-                    {{-- <p>- OR -</p>
-                <a href="#" class="btn btn-block btn-primary">
-                <i class="fab fa-facebook mr-2"></i> Sign in using Facebook
-                </a>
-                <a href="#" class="btn btn-block btn-danger">
-                <i class="fab fa-google-plus mr-2"></i> Sign in using Google+
-                </a> --}}
+                {{-- <div class="text-center">
+                    <p class="small text-muted">Or sign in using social accounts</p>
+                    <a href="#" class="btn btn-outline-primary btn-sm mx-1">
+                        <i class="fab fa-facebook-f"></i> Facebook
+                    </a>
+                    <a href="#" class="btn btn-outline-danger btn-sm mx-1">
+                        <i class="fab fa-google"></i> Google
+                    </a>
                 </div>
-                <!-- /.social-auth-links -->
 
-
-                <p class="mb-1">
-                    <a href="forgot-password.html">I forgot my password</a>
-                </p>
-                <p class="mb-0">
-                    <a href="register.html" class="text-center">Register a new membership</a>
-                </p>
+                <p class="mt-3 text-center">
+                    <a href="#" class="text-decoration-none">Forgot your password?</a><br>
+                    <a href="#" class="text-decoration-none">Register a new account</a>
+                </p> --}}
             </div>
-            <!-- /.login-card-body -->
         </div>
     </div>
-    <!-- /.login-box -->
 
     <!-- jQuery -->
     <script src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/plugins/jquery/jquery.min.js') }}"></script>
@@ -107,9 +141,22 @@
 
     <!-- AdminLTE App -->
     <script src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/js/adminlte.min.js') }}"></script>
-
-
-
 </body>
 
+
 </html>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const msg = document.querySelector('.flash-message');
+        if (msg) {
+            // show with animation
+            msg.classList.add('show');
+
+            // hide after 3 seconds
+            setTimeout(() => {
+                msg.classList.remove('show');
+                setTimeout(() => msg.remove(), 500); // remove after fade
+            }, 3000);
+        }
+    });
+</script>

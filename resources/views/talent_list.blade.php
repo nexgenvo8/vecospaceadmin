@@ -1,11 +1,18 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JMIVecospace | DataTables</title>
-
+    <title>Talent-JMIvecospace</title>
+    @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -23,6 +30,9 @@
     <link rel="stylesheet" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/css/adminlte.min.css') }}">
 
 </head>
+<?php
+$websiteurl = env('WEBSITE_URL');
+?>
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -102,9 +112,9 @@
                                                                 data-toggle="modal"
                                                                 data-target="#statusModalTalent{{ $talent['id'] }}">
                                                                 @if (isset($talent['Status']) && $talent['Status'] == 1)
-                                                                    <span class="badge badge-success">Inactive</span>
+                                                                    <span class="badge badge-success">Active</span>
                                                                 @else
-                                                                    <span class="badge badge-danger">Active</span>
+                                                                    <span class="badge badge-danger">Inactive</span>
                                                                 @endif
                                                             </button>
 
@@ -166,8 +176,8 @@
                                                             </div>
                                                         </td>
 
-                                                        <td>
-                                                            <a href="https://jmi.vecospace.com/talent-profile-detail.html?id={{ $talent['id'] ?? '' }}"
+                                                        <td align="center" valign="top" class="graylist">
+                                                            <a href="{{ $websiteurl ?? 'https://jmi.vecospace.com/' }}talent-profile-detail.html?id={{ encodeStr($talent['id'] ?? '') }}"
                                                                 class="btn btn-primary btn-sm" target="_blank">
                                                                 Open
                                                             </a>

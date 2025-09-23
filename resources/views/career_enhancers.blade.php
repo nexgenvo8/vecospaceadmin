@@ -1,11 +1,18 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JMIVecospace | DataTables</title>
-
+    <title>Career-JMIvecospace</title>
+    @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -23,6 +30,9 @@
     <link rel="stylesheet" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/css/adminlte.min.css') }}">
 
 </head>
+<?php
+$websiteurl = env('WEBSITE_URL');
+?>
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -98,7 +108,7 @@
                                                                 class="btn btn-link p-0 m-0 align-baseline"
                                                                 data-toggle="modal"
                                                                 data-target="#statusModalCompany{{ $company['id'] }}">
-                                                                @if (isset($company['Status']) && $company['Status'] == 1)
+                                                                @if (isset($company['viewStatus']) && $company['viewStatus'] == 1)
                                                                     <span class="badge badge-success">Active</span>
                                                                 @else
                                                                     <span class="badge badge-danger">Inactive</span>
@@ -127,7 +137,7 @@
                                                                         </div>
 
                                                                         <div class="modal-body">
-                                                                            @if (isset($company['Status']) && $company['Status'] == 1)
+                                                                            @if (isset($company['viewStatus']) && $company['viewStatus'] == 1)
                                                                                 <p>Are you sure you want to
                                                                                     <b>Deactivate</b> this company?
                                                                                 </p>
@@ -152,8 +162,8 @@
                                                                                 <input type="hidden" name="id"
                                                                                     value="{{ $company['id'] }}">
                                                                                 <!-- Flip status: 1 -> 0, 0 -> 1 -->
-                                                                                <input type="hidden" name="status"
-                                                                                    value="{{ isset($company['Status']) && $company['Status'] == 1 ? 0 : 1 }}">
+                                                                                <input type="hidden" name="viewStatus"
+                                                                                    value="{{ isset($company['viewStatus']) && $company['viewStatus'] == 0 ? 1 : 0 }}">
                                                                                 <button type="submit"
                                                                                     class="btn btn-primary">Yes</button>
                                                                             </form>
@@ -164,13 +174,39 @@
                                                             </div>
                                                         </td>
 
-                                                        <td>
+                                                        @php
+                                                            $postTitle = substr(
+                                                                preg_replace(
+                                                                    '/[^A-Za-z0-9\-]/',
+                                                                    '-',
+                                                                    str_replace(
+                                                                        ' ',
+                                                                        '-',
+                                                                        strip_tags(
+                                                                            trim(
+                                                                                strtolower(
+                                                                                    $company['CompanyBusinessName'] ??
+                                                                                        '',
+                                                                                ),
+                                                                            ),
+                                                                        ),
+                                                                    ),
+                                                                ),
+                                                                0,
+                                                                100,
+                                                            );
+                                                        @endphp
+
+                                                        <td align="center" valign="top" class="graylist">
                                                             @if (!empty($company['id']))
-                                                                <a href="https://jmi.vecospace.com/smbkonectt/{{ $company['id'] }}/test.html"
-                                                                    target="_blank"
-                                                                    class="btn btn-primary btn-sm">Open</a>
+                                                                <a href="{{ $websiteurl }}smbkonectt/{{ encodeStr($company['id']) }}/{{ $postTitle }}.html"
+                                                                    target="_blank" class="btn btn-primary btn-sm">
+                                                                    Open
+                                                                </a>
                                                             @endif
                                                         </td>
+
+
 
                                                     </tr>
                                                 @endforeach

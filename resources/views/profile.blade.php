@@ -1,11 +1,18 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | General Form Elements</title>
-
+    <title>Profile-JMIvecospace</title>
+    @include('layout.favicon')
     <!-- Font Awesome -->
     <link rel="stylesheet"
         href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/plugins/fontawesome-free/css/all.min.css') }}">

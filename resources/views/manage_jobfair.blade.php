@@ -1,11 +1,18 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JMIVecospace | DataTables</title>
-
+    <title>Register-JMIvecospace</title>
+    @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -37,14 +44,21 @@
                         <div class="col-sm-6">
                             <h1>MANAGE JOB FAIR REGISTRATION </h1>
                         </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
+                        <div class="col-sm-6 text-right">
+                            <ol class="breadcrumb float-sm-right mb-1">
                                 <li class="breadcrumb-item"><a href="{{ route('index') }}">Home</a></li>
                                 <li class="breadcrumb-item active">REGISTRATION</li>
-                            </ol>
+                            </ol><br>
+                            <div>
+                                <strong>
+                                    Total: {{ $total ?? 0 }}
+                                </strong>
+                            </div>
+
                         </div>
                     </div>
-                </div><!-- /.container-fluid -->
+                </div>
+                <!-- /.container-fluid -->
             </section>
 
             <!-- Main content -->
@@ -58,65 +72,111 @@
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    <table id="example1" class="table table-bordered table-striped">
-                                        <thead>
-                                            <tr>
-                                                <th>S.N.</th>
-                                                <th>UPC NO.</th>
-                                                <th>NAME</th>
-                                                <th>DEPARTMENT</th>
-                                                <th>COURSE</th>
-                                                <th>SEMESTER</th>
-                                                <th>PASSING YEAR</th>
-                                                <th>MOBILE</th>
-                                                <th>GENDER</th>
-                                                <th>UNIVERSITY ID</th>
-                                                <th>STUDENT ID PROOF</th>
-                                                <th>STUDENT ID TYPE</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @foreach ($registers as $index => $register)
+                                    <div class="table-responsive">
+                                        <table id="example" class="table table-bordered table-striped">
+                                            <thead>
                                                 <tr>
-                                                    <td>{{ $index + 1 }}</td>
-                                                    <td>{{ $register['registrationNo'] ?? 'N/A' }}</td>
-                                                    <td>{{ $register['firstName'] . ' ' . $register['lastName'] }}</td>
-                                                    <td>{{ $register['departmentname'] ?? 'N/A' }}</td>
-                                                    <td>{{ $register['coursename'] ?? 'N/A' }}</td>
-                                                    <td>{{ $register['semester'] ?? 'N/A' }}</td>
-                                                    <td>{{ $register['passingyear'] ?? 'N/A' }}</td>
-                                                    <td>{{ $register['mobile'] ?? 'N/A' }}</td>
-                                                    <td>{{ $register['gender'] ?? 'N/A' }}</td>
-                                                    <td>{{ $register['studentId'] ?? 'N/A' }}</td>
-                                                    <td>
-                                                        @if (!empty($register['universityIdAttchment']))
-                                                            <a href="{{ asset('uploads/' . $register['universityIdAttchment']) }}"
-                                                                target="_blank">View Proof</a>
-                                                        @else
-                                                            N/A
-                                                        @endif
-                                                    </td>
-                                                    <td>
-                                                        @if (isset($register['photoIdType']))
-                                                            @if ($register['photoIdType'] == 1)
-                                                                Aadhar Card
-                                                            @elseif($register['photoIdType'] == 2)
-                                                                PAN Card
-                                                            @else
-                                                                Other
-                                                            @endif
-                                                        @else
-                                                            N/A
-                                                        @endif
-                                                    </td>
+                                                    <th style="white-space: nowrap">S.N.</th>
+                                                    <th style="white-space: nowrap">UPC NO.</th>
+                                                    <th style="white-space: nowrap">NAME</th>
+                                                    <th style="white-space: nowrap">DEPARTMENT</th>
+                                                    <th style="white-space: nowrap">COURSE</th>
+                                                    <th style="white-space: nowrap">SEMESTER</th>
+                                                    <th style="white-space: nowrap">PASSING YEAR</th>
+                                                    <th style="white-space: nowrap">MOBILE</th>
+                                                    <th style="white-space: nowrap">GENDER</th>
+                                                    <th style="white-space: nowrap">UNIVERSITY ID</th>
+                                                    <th style="white-space: nowrap">STUDENT ID PROOF</th>
+                                                    <th style="white-space: nowrap">STUDENT ID TYPE</th>
                                                 </tr>
-                                            @endforeach
-                                        </tbody>
-                                    </table>
+                                            </thead>
+                                            <tbody>
+                                                @foreach ($registers as $index => $register)
+                                                    <tr>
+                                                        <td>{{ $index + 1 }}</td>
+                                                        <td>{{ $register['registrationNo'] ?? 'N/A' }}</td>
+                                                        <td>{{ $register['firstName'] . ' ' . $register['lastName'] }}
+                                                        </td>
+                                                        <td>{{ $register['departmentname'] ?? 'N/A' }}</td>
+                                                        <td>{{ $register['coursename'] ?? 'N/A' }}</td>
+                                                        <td>{{ $register['semester'] ?? 'N/A' }}</td>
+                                                        <td>{{ $register['passingyear'] ?? 'N/A' }}</td>
+                                                        <td>{{ $register['mobile'] ?? 'N/A' }}</td>
+                                                        <td>{{ $register['gender'] ?? 'N/A' }}</td>
+                                                        <td>{{ $register['studentId'] ?? 'N/A' }}</td>
+                                                        <td>
+                                                            @if (!empty($register['universityIdAttchment']))
+                                                                <a href="{{ asset('uploads/' . $register['universityIdAttchment']) }}"
+                                                                    target="_blank">View Proof</a>
+                                                            @else
+                                                                N/A
+                                                            @endif
+                                                        </td>
+                                                        <td>
+                                                            @if (isset($register['photoIdType']))
+                                                                @if ($register['photoIdType'] == 1)
+                                                                    Aadhar Card
+                                                                @elseif($register['photoIdType'] == 2)
+                                                                    PAN Card
+                                                                @else
+                                                                    Other
+                                                                @endif
+                                                            @else
+                                                                N/A
+                                                            @endif
+                                                        </td>
+                                                    </tr>
+                                                @endforeach
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <nav aria-label="Page navigation">
+                                        <ul class="pagination justify-content-end">
+
+                                            <li class="page-item {{ $currentPage == 1 ? 'disabled' : '' }}">
+                                                <a class="page-link"
+                                                    href="{{ $currentPage > 1 ? request()->url() . '?page=' . ($currentPage - 1) : '#' }}">
+                                                    Previous
+                                                </a>
+                                            </li>
+
+                                            <li class="page-item {{ $currentPage == 1 ? 'active' : '' }}">
+                                                <a class="page-link" href="{{ request()->url() }}?page=1">1</a>
+                                            </li>
+
+                                            @if ($currentPage > 3)
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            @endif
+
+                                            @for ($page = max(2, $currentPage - 1); $page <= min($lastPage - 1, $currentPage + 1); $page++)
+                                                <li class="page-item {{ $currentPage == $page ? 'active' : '' }}">
+                                                    <a class="page-link"
+                                                        href="{{ request()->url() }}?page={{ $page }}">{{ $page }}</a>
+                                                </li>
+                                            @endfor
+
+                                            @if ($currentPage < $lastPage - 2)
+                                                <li class="page-item disabled"><span class="page-link">...</span></li>
+                                            @endif
+
+                                            @if ($lastPage > 1)
+                                                <li class="page-item {{ $currentPage == $lastPage ? 'active' : '' }}">
+                                                    <a class="page-link"
+                                                        href="{{ request()->url() }}?page={{ $lastPage }}">{{ $lastPage }}</a>
+                                                </li>
+                                            @endif
+
+                                            <li class="page-item {{ $currentPage == $lastPage ? 'disabled' : '' }}">
+                                                <a class="page-link"
+                                                    href="{{ $currentPage < $lastPage ? request()->url() . '?page=' . ($currentPage + 1) : '#' }}">
+                                                    Next
+                                                </a>
+                                            </li>
+
+                                        </ul>
+                                    </nav>
+
                                 </div>
-
-
-
 
                                 <!-- /.card-body -->
                             </div>

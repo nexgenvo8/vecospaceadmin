@@ -1,11 +1,18 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JMIVecospace | DataTables</title>
-
+    <title>Company-JMIvecospace</title>
+    @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -159,10 +166,32 @@ $websiteurl = env('WEBSITE_URL');
                                                                 </div>
                                                             </div>
                                                         </td>
-                                                        <td>
-                                                            <a href="{{ $company['companyUrl'] ?? '#' }}"
-                                                                target="_blank" class="btn btn-sm btn-primary">Open</a>
+                                                        @php
+                                                            $postTitle = substr(
+                                                                strtolower(
+                                                                    preg_replace(
+                                                                        '/[^A-Za-z0-9\-]/',
+                                                                        '-',
+                                                                        str_replace(
+                                                                            ' ',
+                                                                            '-',
+                                                                            strip_tags(trim($company['companyName'])),
+                                                                        ),
+                                                                    ),
+                                                                ),
+                                                                0,
+                                                                100,
+                                                            );
+                                                        @endphp
+
+                                                        <td align="center" valign="top" class="graylist">
+                                                            <a href="{{ $websiteurl }}corporate-connect/{{ encodeStr($company['id']) }}/{{ $postTitle }}.html"
+                                                                target="_blank" class="btn btn-sm btn-primary">
+                                                                Open
+                                                            </a>
                                                         </td>
+
+
                                                     </tr>
                                                 @endforeach
                                             @else

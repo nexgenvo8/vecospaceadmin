@@ -9,6 +9,8 @@ return array(
     'App\\Http\\Controllers\\AuthController' => $baseDir . '/app/Http/Controllers/AuthController.php',
     'App\\Http\\Controllers\\Controller' => $baseDir . '/app/Http/Controllers/Controller.php',
     'App\\Http\\Controllers\\UserAdminController' => $baseDir . '/app/Http/Controllers/UserAdminController.php',
+    'App\\Http\\Middleware\\AdminSessionTimeout' => $baseDir . '/app/Http/Middleware/AdminSessionTimeout.php',
+    'App\\Http\\Middleware\\CheckPermission' => $baseDir . '/app/Http/Middleware/CheckPermission.php',
     'App\\Models\\User' => $baseDir . '/app/Models/User.php',
     'App\\Providers\\AppServiceProvider' => $baseDir . '/app/Providers/AppServiceProvider.php',
     'App\\Services\\ApiService' => $baseDir . '/app/Services/ApiService.php',

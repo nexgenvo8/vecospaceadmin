@@ -1,11 +1,18 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JMIVecospace | DataTables</title>
-
+    <title>Notice-JMIvecospace</title>
+    @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -130,7 +137,7 @@
                                                 </div>
 
                                                 <!-- Added Date -->
-                                                <div class="form-group">
+                                                {{-- <div class="form-group">
                                                     <label for="addDate">Date Added</label>
                                                     <input type="date" name="addeddate" class="form-control"
                                                         id="addDate" required>
@@ -151,7 +158,7 @@
                                                         <option value="inactive">Inactive</option>
                                                         <option value="draft">Draft</option>
                                                     </select>
-                                                </div>
+                                                </div> --}}
 
                                             </div>
 
@@ -189,7 +196,7 @@
                                                     <label for="editdetails">Details</label>
                                                     <textarea name="details" class="form-control" id="editdetails" required></textarea>
                                                 </div>
-                                                <div class="form-group">
+                                                {{-- <div class="form-group">
                                                     <label for="editDate">Date Added</label>
                                                     <input type="date" name="addeddate" class="form-control"
                                                         id="editDate">
@@ -205,7 +212,7 @@
                                                         <option value="active">Active</option>
                                                         <option value="inactive">Inactive</option>
                                                     </select>
-                                                </div>
+                                                </div> --}}
                                             </div>
                                             <div class="modal-footer">
                                                 <button type="button" class="btn btn-secondary"
@@ -224,9 +231,9 @@
                                     $("#editId").val($(this).data("id"));
                                     $("#editTitle").val($(this).data("title"));
                                     $("#editdetails").val($(this).data("details"));
-                                    $("#editDate").val($(this).data("added"));
-                                    $("#editLastModified").val($(this).data("modified"));
-                                    $("#editStatus").val($(this).data("status"));
+                                    // $("#editDate").val($(this).data("added"));
+                                    // $("#editLastModified").val($(this).data("modified"));
+                                    // $("#editStatus").val($(this).data("status"));
 
                                     $("#editModal").modal("show");
                                 });

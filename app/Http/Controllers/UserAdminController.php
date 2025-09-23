@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Services\ApiService;
 
+use GuzzleHttp\Client;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
+use Maatwebsite\Excel\Facades\Excel;
 
 class UserAdminController extends Controller
 {
@@ -84,7 +86,9 @@ class UserAdminController extends Controller
                 session([
                     'admin' => $apiData['admin'],
                     'token' => $apiData['token'],
-                    'expires_at' => $apiData['expires_at'],
+                    'permissions' => explode(',', $apiData['permissions']['permissions']) ?? 0,  // ✅ Important: convert to array
+                    'user_id' => $apiData['admin']['id'],
+                    'expires_at' => now()->addMinutes(30)->timestamp,
                     'login_date' => $apiData['login_date'],
                     'login_time' => $apiData['login_time'],
                 ]);
@@ -125,6 +129,8 @@ class UserAdminController extends Controller
         $companylist = $response['DataList'] ?? []; // only Data array
         return view('company_list', compact('companylist'));
     }
+
+
 
     public function eventCalender()
     {
@@ -169,13 +175,31 @@ class UserAdminController extends Controller
     }
 
 
-    public function postList()
+    public function postList(Request $request)
     {
-        $response = $this->apiService->getData('post/list');
+        // Current page
+        $currentPage = $request->input('page', 1);
 
-        $posts = $response['Data'] ?? []; // Data array ko posts naam de diya
-        return view('posts_list', compact('posts'));
+        // Build pagination params
+        $params = [
+            'page' => $currentPage,
+            'perPage' => 10, // default per page
+        ];
+
+        // Fetch post list from API
+        $response = $this->apiService->getData('post/list', $params);
+
+        // Extract data
+        $posts = $response['DataList'] ?? [];
+        $total = $response['total'] ?? 0;
+        $perPage = $response['per_page'] ?? 10;
+        $lastPage = $response['last_page'] ?? 1;
+        $currentPage = $response['current_page'] ?? 1;
+
+        // Return view with pagination data
+        return view('posts_list', compact('posts', 'total', 'perPage', 'lastPage', 'currentPage'));
     }
+
 
 
     public function contactUsList()
@@ -188,6 +212,8 @@ class UserAdminController extends Controller
 
 
 
+
+
     public function articleList()
     {
         $response = $this->apiService->getData('article/list');
@@ -196,6 +222,68 @@ class UserAdminController extends Controller
         return view('article_list', compact('articlelist'));
     }
 
+
+
+    public function rolePermission()
+    {
+        $response = $this->apiService->postData('list-profile');
+
+        // Extract 'Data' from nested structure
+        $roles = $response['data']['Data'] ?? [];
+
+        return view('roles_permissions', compact('roles'));
+    }
+
+
+
+    public function editrolePermission(Request $request)
+    {
+        $userId = (int) $request->query('user_id');
+
+        if (!$userId) {
+            return redirect()->back()->with('error', 'User ID is required');
+        }
+
+        $data = ['user_id' => $userId];
+
+        $response = $this->apiService->getData('rolepermissions/list-roles-permissions', $data);
+
+        $userRoles = $response['data'] ?? [];
+
+        // Properly fetch the specific user role
+        $userRole = collect($userRoles)->firstWhere('user_id', $userId);
+
+        return view('edit_roles_permissions', compact('userRole'));
+    }
+
+
+
+
+
+
+
+    public function updaterolePermission(Request $request)
+    {
+        // Prepare data to send to API
+        $data = [
+            'user_id' => (int) $request->input('user_id'),
+            'role_name' => $request->input('role_name'),
+            'permissions' => $request->input('permissions', []), // array of selected permissions
+        ];
+
+        // Send JSON data to API
+        $response = $this->apiService->postJson('rolepermissions/add-roles-permissions', $data);
+
+        // Check API response
+        if (isset($response['error']) && $response['error'] === false) {
+            // Success → redirect to roles_permissions_list with success message
+            return redirect()->route('roles_permissions_list')->with('success', 'Role Permission Insertred successfully!');
+        }
+
+        // Failure → redirect back with error message
+        $errorMessage = $response['message'] ?? 'Failed to update Role Permission';
+        return redirect()->back()->with('error', $errorMessage);
+    }
 
 
     public function departmentListData()
@@ -224,9 +312,7 @@ class UserAdminController extends Controller
         $data = [
             'title' => $request->input('title'),
             'details' => $request->input('details'),
-            'addeddate' => $request->input('addeddate'),   // form se aayega
-            'modifydate' => $request->input('modifydate'),  // form se aayega
-            'status' => $request->input('status'),
+
         ];
 
 
@@ -319,8 +405,51 @@ class UserAdminController extends Controller
     }
 
 
+    public function recordCount()
+    {
+        // Departments
+        $departmentResponse = $this->apiService->getData('department/list');
+        $totalDepartments = $departmentResponse['TotalRecord'] ?? 0;
+
+        // Registers (with user type summary)
+        $registerResponse = $this->apiService->getData('register/list');
+        $totalRegisters = $registerResponse['total'] ?? 0;
+
+        // Extract user type summary if available
+        $userTypeSummary = $registerResponse['user_type_summary'] ?? [
+            'Student' => 0,
+            'Faculty' => 0,
+            'Alumni' => 0,
+            'Industry Professional' => 0,
+            'Career Enhancer / Service Provider' => 0
+        ];
+
+        // Posts
+        $postResponse = $this->apiService->getData('post/list');
+        $totalPosts = $postResponse['total'] ?? 0;
+
+        // Courses
+        $courseResponse = $this->apiService->getData('course/list');
+        $totalCourses = $courseResponse['TotalRecord'] ?? 0;
+
+        // Pass all data to view
+        return view('index', compact(
+            'totalDepartments',
+            'totalRegisters',
+            'totalPosts',
+            'totalCourses',
+            'userTypeSummary'
+        ));
+    }
 
 
+    public function permissionsList()
+    {
+        $response = $this->apiService->getData('rolepermissions/list-roles-permissions');
+        $permissions = $response['data'] ?? [];
+
+        return view('permissions_list', compact('permissions'));
+    }
     public function departmentList()
     {
         $response = $this->apiService->getData('department/list');
@@ -443,6 +572,23 @@ class UserAdminController extends Controller
 
 
 
+    public function updateUserStatus(Request $request)
+    {
+        $data = [
+            'userId' => $request->input('userId'),
+            'activeYN' => $request->input('activeYN'), // ✅ correct key
+        ];
+
+        $response = $this->apiService->postData('user/updatestatus', $data);
+
+        if (isset($response['error']) && $response['error'] === false) {
+            return redirect()->route('user_subscription_list')->with('success', 'User status updated!');
+        }
+
+        return back()->withErrors(['error' => $response['message'] ?? 'Failed to update user'])->withInput();
+    }
+
+
     public function updateGroupStatus(Request $request)
     {
         $data = [
@@ -501,7 +647,7 @@ class UserAdminController extends Controller
     {
         $data = [
             'id' => $request->input('id'),
-            'status' => (int) $request->input('status'), // convert to integer
+            'viewStatus' => (int) $request->input('viewStatus'), // convert to integer
         ];
 
         $response = $this->apiService->postData('business/update', $data);
@@ -605,13 +751,30 @@ class UserAdminController extends Controller
 
 
 
-    public function registrationList()
+    public function registrationList(Request $request)
     {
-        $response = $this->apiService->getData('register/list');
+        $currentPage = $request->input('page', 1);
 
-        $registers = $response['DataList'] ?? []; // key lowercase hai
-        return view('manage_jobfair', compact('registers'));
+        // Build filters if necessary (optional)
+        $filters = [
+            'page' => $currentPage,
+            // Add other filter parameters if needed
+        ];
+
+        $filters = array_filter($filters, fn($value) => !is_null($value) && $value !== '');
+
+        // Fetch paginated registration list from API
+        $response = $this->apiService->getData('register/list', $filters);
+
+        $registers = $response['DataList'] ?? [];
+        $total = $response['total'] ?? 0;
+        $perPage = $response['per_page'] ?? 10;
+        $lastPage = $response['last_page'] ?? 1;
+        $currentPage = $response['current_page'] ?? 1;
+
+        return view('manage_jobfair', compact('registers', 'total', 'perPage', 'lastPage', 'currentPage'));
     }
+
 
 
 
@@ -630,4 +793,462 @@ class UserAdminController extends Controller
         return redirect()->route('loginform')->with('success', 'You have been logged out successfully.');
     }
 
+
+
+
+    public function manageUserData()
+    {
+        $deptResponse = $this->apiService->getData('department/list');
+        $departments = $deptResponse['DataList'] ?? [];
+
+        $courseResponse = $this->apiService->getData('course/list');
+        $courses = $courseResponse['DataList'] ?? [];
+
+
+
+        return view('subscription_list', compact('courses'));
+    }
+
+
+    public function userList(Request $request)
+    {
+        $currentPage = $request->input('page', 1);
+
+        // Fetch courses and departments
+        $courseResponse = $this->apiService->getData('course/list');
+        $courses = $courseResponse['DataList'] ?? [];
+
+        $deptResponse = $this->apiService->getData('department/list');
+        $departments = $deptResponse['DataList'] ?? [];
+
+        // Build filters array
+        $filters = [
+            'page' => $currentPage,
+            'firstName' => $request->input('firstName'),
+            'lastName' => $request->input('lastName'),
+            'email' => $request->input('email'),
+            'userstype' => $request->input('userstype'),
+        ];
+
+        // Remove null/empty values
+        $filters = array_filter($filters, fn($value) => !is_null($value) && $value !== '');
+
+        // Fetch user list with filters
+        $response = $this->apiService->getData('user/listusers', $filters);
+
+        $dataList = $response['DataList'] ?? [];
+        $total = $response['total'] ?? 0;
+        $perPage = $response['per_page'] ?? 10;
+        $lastPage = $response['last_page'] ?? 1;
+        $currentPage = $response['current_page'] ?? 1;
+
+        return view('subscription_list', compact('dataList', 'courses', 'departments', 'total', 'perPage', 'lastPage', 'currentPage'));
+    }
+
+
+
+
+    public function updateUser(Request $request)
+    {
+        $data = [
+            'userId' => $request->input('userId'),
+            'firstName' => $request->input('firstName'),
+            'lastName' => $request->input('lastName'),
+            'email' => $request->input('email'),
+            'mobile' => $request->input('mobile'),
+            'userstype' => $request->input('userstype'),
+            'coursename' => $request->input('course_name'),        // Match form field name
+            'departmentname' => $request->input('department_name'),   // Match form field name
+            'passingyear' => $request->input('passingyear'),
+        ];
+
+        $response = $this->apiService->postData('user/updateusers', $data);
+
+        if (isset($response['error']) && $response['error'] === false) {
+            return redirect()->route('user_subscription_list')->with('success', 'User updated successfully!');
+        }
+
+        return back()->withErrors(['error' => $response['message'] ?? 'Failed to update user'])->withInput();
+    }
+
+
+
+    public function importedUsers(Request $request)
+    {
+        try {
+            $file = $request->file('excel_file');
+
+            if (!$file || !$file->isValid()) {
+                return response()->json([
+                    'status' => 0,
+                    'message' => 'No valid file uploaded.'
+                ], 400);
+            }
+
+            $client = new Client();
+
+            $apiUrl = env('API_URL');  // Or config('app.api_url') if set in config/app.php
+
+            $response = $client->post($apiUrl . 'usersimport', [
+                'multipart' => [
+                    [
+                        'name' => 'excel_file',
+                        'contents' => fopen($file->getPathname(), 'r'),
+                        'filename' => $file->getClientOriginalName(),
+                    ],
+                ],
+            ]);
+
+
+            $responseBody = $response->getBody()->getContents();
+            $responseData = json_decode($responseBody, true);
+
+            if (!is_array($responseData)) {
+                throw new \Exception('Invalid API response format');
+            }
+
+            return response()->json($responseData);
+
+        } catch (\Exception $e) {
+            \Log::error('Import Exception:', ['message' => $e->getMessage()]);
+
+            return response()->json([
+                'status' => 0,
+                'message' => 'Error during API call: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
+
+    public function resendEmail(Request $request)
+    {
+        $userId = (int) $request->input('userId');  // Get from POST input
+        $email = $request->input('to');           // Get from POST input
+
+        if (!$userId || !$email) {
+            return back()->withErrors(['error' => 'User ID and Email are required']);
+        }
+
+        $data = [
+            'to' => $email,
+            'userId' => $userId,
+            'settingId' => 3,
+            'templateId' => 123,
+        ];
+
+        // For debugging, you can remove dd($data) in production
+        // dd($data);
+
+        $response = $this->apiService->postData('sendregisteremail', $data);
+
+        if (isset($response['error']) && $response['error'] === false) {
+            return redirect()->route('user_subscription_list')
+                ->with('success', 'Email has been resent successfully!');
+        }
+
+        return back()->withErrors(['error' => $response['message'] ?? 'Failed to resend email']);
+    }
+
+
+
+
+
+    public function menuPages()
+    {
+        $pagedata = $this->apiService->getData('pages/listmenu');
+
+        return view('manage_page', compact('pagedata'));
+    }
+
+
+    public function mangefaqs()
+    {
+        $faqdata = $this->apiService->getData('pages/listfaq');
+
+        return view('manage_faq', compact('faqdata'));
+    }
+    public function createMenuPages(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'txtDescription' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keyword' => 'nullable|string|max:255',
+            'status' => 'required|integer|in:0,1',
+            'backpage' => 'nullable|string|max:255',
+            'type' => 'required|string|in:menu,page', // adjust as per your allowed types
+        ]);
+
+        // Prepare data for API
+        $data = [
+            'title' => $request->input('title'),
+            'txtDescription' => $request->input('txtDescription'),
+            'meta_title' => $request->input('meta_title'),
+            'meta_description' => $request->input('meta_description'),
+            'meta_keyword' => $request->input('meta_keyword'),
+            'status' => $request->input('status'),
+            'backpage' => $request->input('backpage'),
+            'type' => $request->input('type'),
+        ];
+
+        // Send data to API
+        $response = $this->apiService->postData('pages/store', $data);
+
+        // Handle response
+        if (isset($response['error']) && $response['error'] === false) {
+            return redirect()->route('manupageslist')->with('success', 'Page created successfully!');
+        }
+
+        return back()->withErrors(['error' => $response['message'] ?? 'Failed to create page'])->withInput();
+    }
+
+
+    public function updateMenuPages(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'id' => 'required|integer', // The page ID to update
+            'title' => 'nullable|string|max:255',
+            'txtDescription' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keyword' => 'nullable|string|max:255',
+            'status' => 'required|integer|in:0,1',
+            'backpage' => 'nullable|string|max:255',
+            'type' => 'nullable|string|in:menu,page', // adjust based on your allowed types
+        ]);
+
+        // Prepare data for API
+        $data = [
+            'id' => $request->input('id'),
+            'title' => $request->input('title'),
+            'txtDescription' => $request->input('txtDescription'),
+            'meta_title' => $request->input('meta_title'),
+            'meta_description' => $request->input('meta_description'),
+            'meta_keyword' => $request->input('meta_keyword'),
+            'status' => $request->input('status'),
+            'backpage' => $request->input('backpage'),
+            'type' => $request->input('type'),
+        ];
+
+        // Send update request to API
+        $response = $this->apiService->postData('pages/update', $data);
+
+        // Handle response
+        if (isset($response['error']) && $response['error'] === false) {
+            return redirect()->route('manupageslist')->with('success', 'Page updated successfully!');
+        }
+
+        return back()->withErrors(['error' => $response['message'] ?? 'Failed to update page'])->withInput();
+    }
+
+
+
+
+
+
+    public function updateMenuPageStatus(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'id' => 'required|integer',
+            'status' => 'required|integer|in:0,1',
+        ]);
+
+        // Prepare data for API
+        $data = [
+            'id' => $request->input('id'),
+            'status' => $request->input('status'),
+        ];
+
+        // Send update request to API
+        $response = $this->apiService->postData('pages/updatestatus', $data);
+        // Handle response
+        if (isset($response['error']) && $response['error'] === false) {
+            return redirect()->route('manupageslist')->with('success', 'Page updated successfully!');
+        }
+
+        return back()->withErrors(['error' => $response['message'] ?? 'Failed to update page'])->withInput();
+    }
+
+
+
+
+    public function deleteMenuPages(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'id' => 'required|integer',
+        ]);
+
+        // Prepare data for API
+        $data = ['id' => $request->input('id')];
+
+        // Send delete request to API
+        $response = $this->apiService->postData('pages/delete', $data);
+
+        if (isset($response['error']) && $response['error'] === false) {
+            return response()->json([
+                'message' => 'Page deleted successfully',
+                'data' => $response['data'] ?? null
+            ]);
+        }
+
+        return response()->json([
+            'error' => true,
+            'message' => $response['message'] ?? 'Failed to delete page'
+        ], 400);
+    }
+
+
+
+    public function faqCreatedPages(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'title' => 'required|string|max:255',
+            'txtDescription' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keyword' => 'nullable|string|max:255',
+            'status' => 'required|integer|in:0,1',
+            'backpage' => 'nullable|string|max:255',
+            'type' => 'required|string', // adjust as per your allowed types
+        ]);
+
+        // Prepare data for API
+        $data = [
+            'title' => $request->input('title'),
+            'txtDescription' => $request->input('txtDescription'),
+            'meta_title' => $request->input('meta_title'),
+            'meta_description' => $request->input('meta_description'),
+            'meta_keyword' => $request->input('meta_keyword'),
+            'status' => $request->input('status'),
+            'backpage' => $request->input('backpage'),
+            'type' => $request->input('type'),
+        ];
+
+        // Send data to API
+        $response = $this->apiService->postData('pages/store', $data);
+
+        // Handle response
+        if (isset($response['error']) && $response['error'] === false) {
+            return redirect()->route('faqpageslist')->with('success', 'aq created successfully!');
+        }
+
+        return back()->withErrors(['error' => $response['message'] ?? 'Failed to create page'])->withInput();
+    }
+
+
+    public function updateFaqPages(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'id' => 'required|integer', // The page ID to update
+            'title' => 'nullable|string|max:255',
+            'txtDescription' => 'nullable|string',
+            'meta_title' => 'nullable|string|max:255',
+            'meta_description' => 'nullable|string|max:500',
+            'meta_keyword' => 'nullable|string|max:255',
+            'status' => 'required|integer|in:0,1',
+            'backpage' => 'nullable|string|max:255',
+            'type' => 'nullable|string', // adjust based on your allowed types
+        ]);
+
+        // Prepare data for API
+        $data = [
+            'id' => $request->input('id'),
+            'title' => $request->input('title'),
+            'txtDescription' => $request->input('txtDescription'),
+            'meta_title' => $request->input('meta_title'),
+            'meta_description' => $request->input('meta_description'),
+            'meta_keyword' => $request->input('meta_keyword'),
+            'status' => $request->input('status'),
+            'backpage' => $request->input('backpage'),
+            'type' => $request->input('type'),
+        ];
+
+        // Send update request to API
+        $response = $this->apiService->postData('pages/update', $data);
+
+        // Handle response
+        if (isset($response['error']) && $response['error'] === false) {
+            return redirect()->route('faqpageslist')->with('success', 'Page updated successfully!');
+        }
+
+        return back()->withErrors(['error' => $response['message'] ?? 'Failed to update page'])->withInput();
+    }
+
+
+
+
+
+
+    public function updateFaqPageStatus(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'id' => 'required|integer',
+            'status' => 'required|integer|in:0,1',
+        ]);
+
+        // Prepare data for API
+        $data = [
+            'id' => $request->input('id'),
+            'status' => $request->input('status'),
+        ];
+
+        // Send update request to API
+        $response = $this->apiService->postData('pages/updatestatus', $data);
+        // Handle response
+        if (isset($response['error']) && $response['error'] === false) {
+            return redirect()->route('faqpageslist')->with('success', 'Page updated successfully!');
+        }
+
+        return back()->withErrors(['error' => $response['message'] ?? 'Failed to update page'])->withInput();
+    }
+
+
+
+
+    public function deleteFaqPages(Request $request)
+    {
+        // Validate request
+        $request->validate([
+            'id' => 'required|integer',
+        ]);
+
+        // Prepare data for API
+        $data = ['id' => $request->input('id')];
+
+        // Send delete request to API
+        $response = $this->apiService->postData('pages/delete', $data);
+
+        if (isset($response['error']) && $response['error'] === false) {
+            return response()->json([
+                // 'message' => 'Page deleted successfully',
+                'data' => $response['data'] ?? null
+            ]);
+        }
+
+        return response()->json([
+            'error' => true,
+            'message' => $response['message'] ?? 'Failed to delete page'
+        ], 400);
+    }
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
+

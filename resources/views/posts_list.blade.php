@@ -1,11 +1,18 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JMIVecospace | DataTables</title>
-
+    <title>Posts-JMIvecospace</title>
+    @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -13,8 +20,7 @@
     <link rel="stylesheet"
         href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/plugins/fontawesome-free/css/all.min.css') }}">
     <!-- DataTables -->
-    <link rel="stylesheet"
-        href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/plugins/datatables-bs4/css/dataTables.bootstrap4.min.css') }}">
+
     <link rel="stylesheet"
         href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/plugins/datatables-responsive/css/responsive.bootstrap4.min.css') }}">
     <link rel="stylesheet"
@@ -23,6 +29,9 @@
     <link rel="stylesheet" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/css/adminlte.min.css') }}">
 
 </head>
+<?php
+$websiteurl = env('WEBSITE_URL');
+?>
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -44,9 +53,10 @@
                             </ol><br>
                             <div>
                                 <strong>
-                                    Total: {{ !empty($posts) ? count($posts) : 0 }}
+                                    Total: {{ $total ?? 0 }}
                                 </strong>
                             </div>
+
                         </div>
                     </div>
                 </div>
@@ -64,118 +74,260 @@
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    <table id="example1" class="table table-bordered table-hover">
-                                        <thead class="thead-light">
-                                            <tr>
-                                                <th>S.N.</th>
-                                                <th>POST TITLE</th>
-                                                <th>USER NAME</th>
-                                                <th>EMAIL ID</th>
-                                                {{-- <th>BLOCKED</th> --}}
-                                                <th>DATE</th>
-                                                <th>STATUS</th>
-                                                <th>OPEN</th>
-                                                <th>POST</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            @if (!empty($posts))
-                                                @foreach ($posts as $index => $p)
-                                                    <tr>
-                                                        <td>{{ $index + 1 }}</td>
-                                                        <td>{{ $p['PostTitle'] ?? 'N/A' }}</td>
-                                                        <td>{{ $p['UserName'] ?? 'Unknown User' }}</td>
-                                                        <td>{{ $p['Email'] ?? 'No Email' }}</td>
+                                    <div class="table-responsive">
+                                        <table id="example" class="table table-bordered table-striped">
+                                            <thead class="thead-light">
+                                                <tr>
+                                                    <th>S.N.</th>
+                                                    <th>POST TITLE</th>
+                                                    <th>USER NAME</th>
+                                                    <th>EMAIL ID</th>
+                                                    {{-- <th>BLOCKED</th> --}}
+                                                    <th>DATE</th>
+                                                    {{-- <th>STATUS</th> --}}
+                                                    <th>OPEN</th>
+                                                    <th>POST</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @if (!empty($posts))
+                                                    @foreach ($posts as $index => $p)
+                                                        <tr>
+                                                            <td>{{ $index + 1 }}</td>
+                                                            <td>{{ $p['PostTitle'] ?? 'N/A' }}</td>
+                                                            <td>{{ $p['UserName'] ?? 'Unknown User' }}</td>
+                                                            <td>{{ $p['Email'] ?? 'No Email' }}</td>
 
-                                                        <td>{{ $p['DateAdded'] ?? 'N/A' }}</td>
-                                                        <td>
-                                                            <!-- Status Button (Trigger Modal) -->
-                                                            <button type="button"
-                                                                class="btn btn-link p-0 m-0 align-baseline"
-                                                                data-toggle="modal"
-                                                                data-target="#statusModal{{ $p['id'] }}">
-                                                                @if ($p['status'] == 0)
-                                                                    <span class="badge badge-success">Active</span>
-                                                                @else
-                                                                    <span class="badge badge-danger">Inactive</span>
-                                                                @endif
-                                                            </button>
+                                                            <td>{{ $p['DateAdded'] ?? 'N/A' }}</td>
+                                                            {{-- <td>
+                                                                <!-- Status Button (Trigger Modal) -->
+                                                                <button type="button"
+                                                                    class="btn btn-link p-0 m-0 align-baseline"
+                                                                    data-toggle="modal"
+                                                                    data-target="#statusModal{{ $p['id'] }}">
+                                                                    @if ($p['status'] == 0)
+                                                                        <span class="badge badge-success">Active</span>
+                                                                    @else
+                                                                        <span class="badge badge-danger">Inactive</span>
+                                                                    @endif
+                                                                </button>
 
-                                                            <!-- Modal -->
-                                                            <div class="modal fade" id="statusModal{{ $p['id'] }}"
-                                                                tabindex="-1" role="dialog"
-                                                                aria-labelledby="statusModalLabel{{ $p['id'] }}"
-                                                                aria-hidden="true">
-                                                                <div class="modal-dialog modal-dialog-centered"
-                                                                    role="document">
-                                                                    <div class="modal-content">
+                                                                <!-- Modal -->
+                                                                <div class="modal fade"
+                                                                    id="statusModal{{ $p['id'] }}" tabindex="-1"
+                                                                    role="dialog"
+                                                                    aria-labelledby="statusModalLabel{{ $p['id'] }}"
+                                                                    aria-hidden="true">
+                                                                    <div class="modal-dialog modal-dialog-centered"
+                                                                        role="document">
+                                                                        <div class="modal-content">
 
-                                                                        <div class="modal-header">
-                                                                            <h5 class="modal-title"
-                                                                                id="statusModalLabel{{ $p['id'] }}">
-                                                                                Confirm Status Change
-                                                                            </h5>
-                                                                            <button type="button" class="close"
-                                                                                data-dismiss="modal" aria-label="Close">
-                                                                                <span aria-hidden="true">&times;</span>
-                                                                            </button>
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title"
+                                                                                    id="statusModalLabel{{ $p['id'] }}">
+                                                                                    Confirm Status Change
+                                                                                </h5>
+                                                                                <button type="button" class="close"
+                                                                                    data-dismiss="modal"
+                                                                                    aria-label="Close">
+                                                                                    <span
+                                                                                        aria-hidden="true">&times;</span>
+                                                                                </button>
+                                                                            </div>
+
+                                                                            <div class="modal-body">
+                                                                                @if ($p['status'] == 0)
+                                                                                    <p>Are you sure you want to
+                                                                                        <b>Discard</b> this Post?
+                                                                                    </p>
+                                                                                @else
+                                                                                    <p>Are you sure you want to
+                                                                                        <b>Approve</b> this Post?
+                                                                                    </p>
+                                                                                @endif
+                                                                            </div>
+
+                                                                            <div class="modal-footer">
+                                                                                <button type="button"
+                                                                                    class="btn btn-secondary"
+                                                                                    data-dismiss="modal">No</button>
+
+                                                                                <form
+                                                                                    action="{{ route('post.update') }}"
+                                                                                    method="POST"
+                                                                                    style="display:inline;">
+                                                                                    @csrf
+                                                                                    <input type="hidden" name="id"
+                                                                                        value="{{ $p['id'] }}">
+                                                                                    <input type="hidden" name="status"
+                                                                                        value="{{ $p['status'] == 0 ? 1 : 0 }}">
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-primary">
+                                                                                        Yes,
+                                                                                        {{ $p['status'] == 0 ? 'Discard' : 'Approve' }}
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
+
                                                                         </div>
-
-                                                                        <div class="modal-body">
-                                                                            @if ($p['status'] == 0)
-                                                                                <p>Are you sure you want to
-                                                                                    <b>Deactivate</b> this Post?
-                                                                                </p>
-                                                                            @else
-                                                                                <p>Are you sure you want to
-                                                                                    <b>Activate</b> this Post?
-                                                                                </p>
-                                                                            @endif
-                                                                        </div>
-
-                                                                        <div class="modal-footer">
-                                                                            <!-- ❌ No Button -->
-                                                                            <button type="button"
-                                                                                class="btn btn-secondary"
-                                                                                data-dismiss="modal">No</button>
-
-                                                                            <!-- ✅ Yes Button (Submit Form) -->
-                                                                            <form action="{{ route('post.update') }}"
-                                                                                method="POST" style="display:inline;">
-                                                                                @csrf
-                                                                                <input type="hidden" name="id"
-                                                                                    value="{{ $p['id'] }}">
-                                                                                <!-- Flip status correctly -->
-                                                                                <input type="hidden" name="status"
-                                                                                    value="{{ $p['status'] == 0 ? 1 : 0 }}">
-                                                                                <button type="submit"
-                                                                                    class="btn btn-primary">Yes</button>
-                                                                            </form>
-                                                                        </div>
-
                                                                     </div>
                                                                 </div>
-                                                            </div>
-                                                        </td>
+                                                            </td> --}}
 
-                                                        <td>
-                                                            <a href="https://jmi.vecospace.com"
-                                                                class="btn btn-sm btn-primary" target="_blank">View</a>
-                                                        </td>
-                                                        {{-- <td>{{ $p['PostTypeName'] ?? 'N/A' }}</td> --}}
-                                                        <td>{{ $p['PostType'] == 1 ? 'Yes' : 'No' }}</td>
+                                                            <td>
+                                                                <a href="<?php echo $websiteurl; ?>single-post.html?postId=<?php echo encodeStr($p['id']); ?>&postType=<?php echo $p['PostType']; ?>"
+                                                                    class="btn btn-primary">Open</a>
+                                                            </td>
+                                                            {{-- <td>{{ $p['PostTypeName'] ?? 'N/A' }}</td> --}}
+                                                            <td>
+                                                                <!-- Status Button (Trigger Modal) -->
+                                                                <button type="button"
+                                                                    class="btn btn-link p-0 m-0 align-baseline"
+                                                                    data-toggle="modal"
+                                                                    data-target="#statusModal{{ $p['id'] }}">
+                                                                    @if ($p['status'] == 0)
+                                                                        <span class="badge badge-success">Approve</span>
+                                                                    @else
+                                                                        <span class="badge badge-danger">Discard</span>
+                                                                    @endif
+                                                                </button>
 
+                                                                <!-- Modal -->
+                                                                <div class="modal fade"
+                                                                    id="statusModal{{ $p['id'] }}" tabindex="-1"
+                                                                    role="dialog"
+                                                                    aria-labelledby="statusModalLabel{{ $p['id'] }}"
+                                                                    aria-hidden="true">
+                                                                    <div class="modal-dialog modal-dialog-centered"
+                                                                        role="document">
+                                                                        <div class="modal-content">
+
+                                                                            <div class="modal-header">
+                                                                                <h5 class="modal-title"
+                                                                                    id="statusModalLabel{{ $p['id'] }}">
+                                                                                    Confirm Status Change
+                                                                                </h5>
+                                                                                <button type="button" class="close"
+                                                                                    data-dismiss="modal"
+                                                                                    aria-label="Close">
+                                                                                    <span
+                                                                                        aria-hidden="true">&times;</span>
+                                                                                </button>
+                                                                            </div>
+
+                                                                            <div class="modal-body">
+                                                                                @if ($p['status'] == 0)
+                                                                                    <p>Are you sure you want to
+                                                                                        <b>Discard</b> this Post?
+                                                                                    </p>
+                                                                                @else
+                                                                                    <p>Are you sure you want to
+                                                                                        <b>Approve</b> this Post?
+                                                                                    </p>
+                                                                                @endif
+                                                                            </div>
+
+                                                                            <div class="modal-footer">
+                                                                                <button type="button"
+                                                                                    class="btn btn-secondary"
+                                                                                    data-dismiss="modal">No</button>
+
+                                                                                <form
+                                                                                    action="{{ route('post.update') }}"
+                                                                                    method="POST"
+                                                                                    style="display:inline;">
+                                                                                    @csrf
+                                                                                    <input type="hidden" name="id"
+                                                                                        value="{{ $p['id'] }}">
+                                                                                    <input type="hidden" name="status"
+                                                                                        value="{{ $p['status'] == 0 ? 1 : 0 }}">
+                                                                                    <button type="submit"
+                                                                                        class="btn btn-primary">
+
+                                                                                        {{ $p['status'] == 0 ? 'Discard' : 'Approve' }}
+                                                                                    </button>
+                                                                                </form>
+                                                                            </div>
+
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </td>
+
+
+
+                                                        </tr>
+                                                    @endforeach
+                                                @else
+                                                    <tr>
+                                                        <td colspan="9" class="text-center text-danger">
+                                                            🚫 No posts found
+                                                        </td>
                                                     </tr>
-                                                @endforeach
-                                            @else
-                                                <tr>
-                                                    <td colspan="9" class="text-center text-danger">
-                                                        🚫 No posts found
-                                                    </td>
-                                                </tr>
-                                            @endif
-                                        </tbody>
-                                    </table>
+                                                @endif
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    @if ($lastPage > 1)
+                                        <nav aria-label="Page navigation example">
+                                            <ul class="pagination justify-content-end">
+
+                                                <!-- Previous Button -->
+                                                <li class="page-item {{ $currentPage == 1 ? 'disabled' : '' }}">
+                                                    <a class="page-link"
+                                                        href="{{ $currentPage > 1 ? request()->fullUrlWithQuery(['page' => $currentPage - 1]) : '#' }}">
+                                                        Previous
+                                                    </a>
+                                                </li>
+
+                                                <!-- First Page -->
+                                                <li class="page-item {{ $currentPage == 1 ? 'active' : '' }}">
+                                                    <a class="page-link"
+                                                        href="{{ request()->fullUrlWithQuery(['page' => 1]) }}">1</a>
+                                                </li>
+
+                                                <!-- Ellipsis if current page is far from first page -->
+                                                @if ($currentPage > 3)
+                                                    <li class="page-item disabled"><span class="page-link">...</span>
+                                                    </li>
+                                                @endif
+
+                                                <!-- Pages around current page -->
+                                                @for ($page = max(2, $currentPage - 1); $page <= min($lastPage - 1, $currentPage + 1); $page++)
+                                                    <li class="page-item {{ $currentPage == $page ? 'active' : '' }}">
+                                                        <a class="page-link"
+                                                            href="{{ request()->fullUrlWithQuery(['page' => $page]) }}">{{ $page }}</a>
+                                                    </li>
+                                                @endfor
+
+                                                <!-- Ellipsis if current page is far from last page -->
+                                                @if ($currentPage < $lastPage - 2)
+                                                    <li class="page-item disabled"><span class="page-link">...</span>
+                                                    </li>
+                                                @endif
+
+                                                <!-- Last Page -->
+                                                @if ($lastPage > 1)
+                                                    <li
+                                                        class="page-item {{ $currentPage == $lastPage ? 'active' : '' }}">
+                                                        <a class="page-link"
+                                                            href="{{ request()->fullUrlWithQuery(['page' => $lastPage]) }}">{{ $lastPage }}</a>
+                                                    </li>
+                                                @endif
+
+                                                <!-- Next Button -->
+                                                <li
+                                                    class="page-item {{ $currentPage == $lastPage ? 'disabled' : '' }}">
+                                                    <a class="page-link"
+                                                        href="{{ $currentPage < $lastPage ? request()->fullUrlWithQuery(['page' => $currentPage + 1]) : '#' }}">
+                                                        Next
+                                                    </a>
+                                                </li>
+
+                                            </ul>
+                                        </nav>
+                                    @endif
+
                                 </div>
 
 

@@ -36,6 +36,36 @@ class ApiService
         }
     }
 
+
+    public function postJson($endpoint, $data = [])
+    {
+        $url = $this->baseUrl . $endpoint; // Construct full URL
+
+        try {
+            $response = Http::withHeaders([
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ])->post($url, $data); // Send POST request with JSON data
+
+            if ($response->successful()) {
+                return $response->json();
+            }
+
+            return [
+                'error' => true,
+                'message' => $response->body(), // API returned an error
+            ];
+        } catch (\Exception $e) {
+            return [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ];
+        }
+    }
+
+
+
+
     public function postData($endpoint, $data = [])
     {
         try {

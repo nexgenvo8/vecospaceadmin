@@ -1,11 +1,18 @@
+@if (session()->has('admin'))
+    <script>
+        setTimeout(function() {
+            window.location.href = "{{ route('loginform') }}";
+        }, 30 * 60 * 1000); // 5 minutes
+    </script>
+@endif
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>AdminLTE 3 | Advanced form elements</title>
-
+    <title>Users-JMIvecospace</title>
+    @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
         href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700&display=fallback">
@@ -45,117 +52,86 @@
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
         @include('layout.header')
-
-
-
-
         <!-- Content Wrapper. Contains page content -->
         <div class="content-wrapper">
-            <!-- Content Header (Page header) -->
+            <section class="content p-4">
+                <div class="container-fluid px-0">
+                    <div class="text-end mb-4">
+                        <a href="attachment/userUploadFormat1.xls" class="btn btn-success" download>
+                            📥 Download Template Format
+                        </a>
+                    </div>
+                    <div class="upload-container card shadow rounded-lg p-5 mx-auto"
+                        style="width: 100%; max-width: none;">
+                        <h2 class="text-center mb-4 text-primary font-weight-bold">📤 Upload Excel or CSV File</h2>
 
+                        <div class="instructions mb-4 bg-white p-4 rounded border">
+                            <h5 class="font-weight-bold text-secondary">📋 Instructions:</h5>
+                            <ul class="list-unstyled text-muted mb-0">
+                                <li>✅ Upload an Excel file (.xlsx, .xls) or CSV file</li>
+                                <li>✅ Columns required: First Name, Last Name, Date of Birth, Email, Gender, User Type,
+                                    Department, Course, Passing Year</li>
+                                <li>✅ First row will be treated as headers</li>
+                            </ul>
+                        </div>
 
-            <!-- Main content -->
-            <section class="content">
-                <div class="container-fluid">
-                    <!-- /.row -->
-                    <div class="row">
-                        <div class="col-md-12 mt-5">
-                            <div class="card card-default">
-                                <div class="card-header">
-                                    <h3 class="card-title">Dropzone.js <small><em>jQuery File Upload</em> like
-                                            look</small></h3>
-                                </div>
-                                <div class="card-body">
-                                    <div id="actions" class="row">
-                                        <div class="col-lg-6">
-                                            <div class="btn-group w-100">
-                                                <span class="btn btn-success col fileinput-button">
-                                                    <i class="fas fa-plus"></i>
-                                                    <span>Add files</span>
-                                                </span>
-                                                <button type="submit" class="btn btn-primary col start">
-                                                    <i class="fas fa-upload"></i>
-                                                    <span>Start upload</span>
-                                                </button>
-                                                <button type="reset" class="btn btn-warning col cancel">
-                                                    <i class="fas fa-times-circle"></i>
-                                                    <span>Cancel upload</span>
-                                                </button>
-                                            </div>
-                                        </div>
-                                        <div class="col-lg-6 d-flex align-items-center">
-                                            <div class="fileupload-process w-100">
-                                                <div id="total-progress" class="progress progress-striped active"
-                                                    role="progressbar" aria-valuemin="0" aria-valuemax="100"
-                                                    aria-valuenow="0">
-                                                    <div class="progress-bar progress-bar-success" style="width:0%;"
-                                                        data-dz-uploadprogress></div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="table table-striped files" id="previews">
-                                        <div id="template" class="row mt-2">
-                                            <div class="col-auto">
-                                                <span class="preview"><img src="data:," alt=""
-                                                        data-dz-thumbnail /></span>
-                                            </div>
-                                            <div class="col d-flex align-items-center">
-                                                <p class="mb-0">
-                                                    <span class="lead" data-dz-name></span>
-                                                    (<span data-dz-size></span>)
-                                                </p>
-                                                <strong class="error text-danger" data-dz-errormessage></strong>
-                                            </div>
-                                            <div class="col-4 d-flex align-items-center">
-                                                <div class="progress progress-striped active w-100" role="progressbar"
-                                                    aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
-                                                    <div class="progress-bar progress-bar-success" style="width:0%;"
-                                                        data-dz-uploadprogress></div>
-                                                </div>
-                                            </div>
-                                            <div class="col-auto d-flex align-items-center">
-                                                <div class="btn-group">
-                                                    <button class="btn btn-primary start">
-                                                        <i class="fas fa-upload"></i>
-                                                        <span>Start</span>
-                                                    </button>
-                                                    <button data-dz-remove class="btn btn-warning cancel">
-                                                        <i class="fas fa-times-circle"></i>
-                                                        <span>Cancel</span>
-                                                    </button>
-                                                    <button data-dz-remove class="btn btn-danger delete">
-                                                        <i class="fas fa-trash"></i>
-                                                        <span>Delete</span>
-                                                    </button>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <!-- /.card-body -->
-                                <div class="card-footer">
-                                    Visit <a href="https://www.dropzonejs.com">dropzone.js documentation</a> for more
-                                    examples and information about the plugin.
+                        <form id="excel-upload-form" action="{{ route('import.upload') }}" method="POST"
+                            enctype="multipart/form-data">
+                            @csrf
+
+                            <div class="form-group">
+                                <label class="font-weight-bold text-secondary">📂 Select Excel or CSV File</label>
+
+                                <div class="custom-file border rounded p-3 d-flex align-items-center justify-content-between bg-white"
+                                    style="cursor: pointer;" onclick="document.getElementById('excel_file').click();">
+
+                                    <input type="file" class="custom-file-input" id="excel_file" name="excel_file"
+                                        required accept=".xlsx,.xls,.csv" style="display: none;"
+                                        onchange="updateFileName(this)">
+
+                                    <span id="file-name" class="text-muted">No file selected</span>
+                                    <button type="button" class="btn btn-outline-primary btn-sm">Choose File</button>
                                 </div>
                             </div>
-                            <!-- /.card -->
-                        </div>
-                    </div>
-                    <!-- /.row -->
-                </div>
-                <!-- /.container-fluid -->
-            </section>
-            <!-- /.content -->
-        </div>
-        <!-- /.content-wrapper -->
-        @include('layout.header')
 
-        <!-- Control Sidebar -->
-        <aside class="control-sidebar control-sidebar-dark">
-            <!-- Control sidebar content goes here -->
-        </aside>
-        <!-- /.control-sidebar -->
+
+
+
+                            <button type="submit" class="btn btn-primary btn-block font-weight-bold">🚀 Upload
+                                File</button>
+                        </form>
+
+                        <div id="upload-result" class="mt-4"></div>
+
+                        <div class="preview-container mt-5" id="preview-container" style="display: none;">
+                            <h4 class="mb-3 text-secondary">Upload Summary</h4>
+                            <div class="alert alert-info" role="alert" id="summary-alert">
+                                Summary will appear here after upload.
+                            </div>
+
+                            <div class="table-responsive">
+                                <table class="table table-bordered table-hover" id="upload-response">
+                                    <!-- Dynamic table will be injected here -->
+                                </table>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+        </div>
+
+
+        <!-- /.content -->
+    </div>
+    <!-- /.content-wrapper -->
+    @include('layout.footer')
+
+    <!-- Control Sidebar -->
+    <aside class="control-sidebar control-sidebar-dark">
+        <!-- Control sidebar content goes here -->
+    </aside>
+    <!-- /.control-sidebar -->
     </div>
     <!-- ./wrapper -->
 
@@ -194,152 +170,104 @@
     <!-- AdminLTE for demo purposes -->
     <script src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/js/demo.js') }}"></script>
 
-    <!-- Page specific script -->
     <script>
-        $(function() {
-            //Initialize Select2 Elements
-            $('.select2').select2()
-
-            //Initialize Select2 Elements
-            $('.select2bs4').select2({
-                theme: 'bootstrap4'
-            })
-
-            //Datemask dd/mm/yyyy
-            $('#datemask').inputmask('dd/mm/yyyy', {
-                'placeholder': 'dd/mm/yyyy'
-            })
-            //Datemask2 mm/dd/yyyy
-            $('#datemask2').inputmask('mm/dd/yyyy', {
-                'placeholder': 'mm/dd/yyyy'
-            })
-            //Money Euro
-            $('[data-mask]').inputmask()
-
-            //Date picker
-            $('#reservationdate').datetimepicker({
-                format: 'L'
-            });
-
-            //Date and time picker
-            $('#reservationdatetime').datetimepicker({
-                icons: {
-                    time: 'far fa-clock'
-                }
-            });
-
-            //Date range picker
-            $('#reservation').daterangepicker()
-            //Date range picker with time picker
-            $('#reservationtime').daterangepicker({
-                timePicker: true,
-                timePickerIncrement: 30,
-                locale: {
-                    format: 'MM/DD/YYYY hh:mm A'
-                }
-            })
-            //Date range as a button
-            $('#daterange-btn').daterangepicker({
-                    ranges: {
-                        'Today': [moment(), moment()],
-                        'Yesterday': [moment().subtract(1, 'days'), moment().subtract(1, 'days')],
-                        'Last 7 Days': [moment().subtract(6, 'days'), moment()],
-                        'Last 30 Days': [moment().subtract(29, 'days'), moment()],
-                        'This Month': [moment().startOf('month'), moment().endOf('month')],
-                        'Last Month': [moment().subtract(1, 'month').startOf('month'), moment().subtract(1,
-                            'month').endOf('month')]
-                    },
-                    startDate: moment().subtract(29, 'days'),
-                    endDate: moment()
-                },
-                function(start, end) {
-                    $('#reportrange span').html(start.format('MMMM D, YYYY') + ' - ' + end.format(
-                        'MMMM D, YYYY'))
-                }
-            )
-
-            //Timepicker
-            $('#timepicker').datetimepicker({
-                format: 'LT'
-            })
-
-            //Bootstrap Duallistbox
-            $('.duallistbox').bootstrapDualListbox()
-
-            //Colorpicker
-            $('.my-colorpicker1').colorpicker()
-            //color picker with addon
-            $('.my-colorpicker2').colorpicker()
-
-            $('.my-colorpicker2').on('colorpickerChange', function(event) {
-                $('.my-colorpicker2 .fa-square').css('color', event.color.toString());
-            })
-
-            $("input[data-bootstrap-switch]").each(function() {
-                $(this).bootstrapSwitch('state', $(this).prop('checked'));
-            })
-
-        })
-        // BS-Stepper Init
-        document.addEventListener('DOMContentLoaded', function() {
-            window.stepper = new Stepper(document.querySelector('.bs-stepper'))
-        })
-
-        // DropzoneJS Demo Code Start
-        Dropzone.autoDiscover = false
-
-        // Get the template HTML and remove it from the doumenthe template HTML and remove it from the doument
-        var previewNode = document.querySelector("#template")
-        previewNode.id = ""
-        var previewTemplate = previewNode.parentNode.innerHTML
-        previewNode.parentNode.removeChild(previewNode)
-
-        var myDropzone = new Dropzone(document.body, { // Make the whole body a dropzone
-            url: "/target-url", // Set the url
-            thumbnailWidth: 80,
-            thumbnailHeight: 80,
-            parallelUploads: 20,
-            previewTemplate: previewTemplate,
-            autoQueue: false, // Make sure the files aren't queued until manually added
-            previewsContainer: "#previews", // Define the container to display the previews
-            clickable: ".fileinput-button" // Define the element that should be used as click trigger to select files.
-        })
-
-        myDropzone.on("addedfile", function(file) {
-            // Hookup the start button
-            file.previewElement.querySelector(".start").onclick = function() {
-                myDropzone.enqueueFile(file)
+        function updateFileName(input) {
+            const fileNameSpan = document.getElementById('file-name');
+            if (input.files.length > 0) {
+                fileNameSpan.textContent = input.files[0].name;
+            } else {
+                fileNameSpan.textContent = 'No file selected';
             }
-        })
-
-        // Update the total progress bar
-        myDropzone.on("totaluploadprogress", function(progress) {
-            document.querySelector("#total-progress .progress-bar").style.width = progress + "%"
-        })
-
-        myDropzone.on("sending", function(file) {
-            // Show the total progress bar when upload starts
-            document.querySelector("#total-progress").style.opacity = "1"
-            // And disable the start button
-            file.previewElement.querySelector(".start").setAttribute("disabled", "disabled")
-        })
-
-        // Hide the total progress bar when nothing's uploading anymore
-        myDropzone.on("queuecomplete", function(progress) {
-            document.querySelector("#total-progress").style.opacity = "0"
-        })
-
-        // Setup the buttons for all transfers
-        // The "add files" button doesn't need to be setup because the config
-        // `clickable` has already been specified.
-        document.querySelector("#actions .start").onclick = function() {
-            myDropzone.enqueueFiles(myDropzone.getFilesWithStatus(Dropzone.ADDED))
         }
-        document.querySelector("#actions .cancel").onclick = function() {
-            myDropzone.removeAllFiles(true)
-        }
-        // DropzoneJS Demo Code End
+
+        document.getElementById('excel-upload-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            let formData = new FormData(this);
+            let resultDiv = document.getElementById('upload-result');
+            let summaryAlert = document.getElementById('summary-alert');
+            let previewContainer = document.getElementById('preview-container');
+            let uploadResponseTable = document.getElementById('upload-response');
+
+            resultDiv.innerHTML = '<p class="text-info">Uploading file, please wait...</p>';
+            previewContainer.style.display = 'none';
+            uploadResponseTable.innerHTML = '';
+
+            fetch(this.action, {
+                    method: 'POST',
+                    body: formData,
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('input[name="_token"]').value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.status === 1) {
+                        resultDiv.innerHTML = `<p class="text-success">${data.message}</p>`;
+                        summaryAlert.innerHTML = `Imported Users: <strong>${data.imported_count}</strong>`;
+
+                        if (data.imported_users && data.imported_users.length) {
+                            let tableHeader = Object.keys(data.imported_users[0]).map(key => `<th>${key}</th>`)
+                                .join('');
+                            let tableBody = data.imported_users.map(row => {
+                                return `<tr>${Object.values(row).map(val => `<td>${val}</td>`).join('')}</tr>`;
+                            }).join('');
+
+                            uploadResponseTable.innerHTML = `
+                            <thead class="thead-light"><tr>${tableHeader}</tr></thead>
+                            <tbody>${tableBody}</tbody>
+                        `;
+
+                            previewContainer.style.display = 'block';
+                        }
+
+                        // Automatically hide messages after 5 seconds
+                        setTimeout(() => {
+                            resultDiv.innerHTML = '';
+                            summaryAlert.innerHTML = '';
+                            previewContainer.style.display = 'none';
+                            uploadResponseTable.innerHTML = '';
+                        }, 10000); // 5000ms = 5 seconds
+
+                    } else {
+                        resultDiv.innerHTML = `<p class="text-danger">${data.message}</p>`;
+                        if (data.skipped_rows && data.skipped_rows.length) {
+                            resultDiv.innerHTML +=
+                                `<p><strong>Skipped Rows:</strong> ${JSON.stringify(data.skipped_rows)}</p>`;
+                        }
+
+                        setTimeout(() => {
+                            resultDiv.innerHTML = '';
+                        }, 5000); // hide error message after 5 seconds
+                    }
+                })
+                .catch(err => {
+                    resultDiv.innerHTML = `<p class="text-danger">Upload failed: ${err}</p>`;
+                    setTimeout(() => {
+                        resultDiv.innerHTML = '';
+                    }, 5000);
+                });
+        });
     </script>
+
+
+    <style>
+        body {
+            background: #f8f9fa;
+        }
+
+        .upload-container {
+            max-width: 600px;
+            margin: auto;
+            background: #fff;
+        }
+
+        #upload-result p {
+            font-size: 1rem;
+        }
+    </style>
+
+
+
 </body>
 
 </html>
