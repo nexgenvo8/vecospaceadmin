@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>JMIvecospace| Login</title>
+    <title>SDGvecospace| Login</title>
 
     <link rel="shortcut icon" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/img/logo11.png') }}"
         type="image/x-icon">
@@ -65,17 +65,14 @@
     }
 </style>
 
-
-
-
-
-
 <body class="hold-transition login-page bg-light">
     <div class="login-box">
         <div class="login-logo mb-4">
-            <a href="#" class="h1 text-primary"><b>JMI</b>Vecospace</a>
+            <a href="#">
+                <img src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/img/login-logo.png') }}" alt="Logo"
+                    style="max-height: 80px; width: auto;">
+            </a>
         </div>
-
         <div class="card shadow-lg rounded-lg">
             <div class="card-body login-card-body">
                 <h4 class="text-center mb-4 font-weight-bold">Sign In to Your Account</h4>

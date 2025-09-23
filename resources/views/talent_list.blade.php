@@ -11,7 +11,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Talent-JMIvecospace</title>
+    <title>Talent-SDGvecospace</title>
     @include('layout.favicon')
     <!-- Google Font: Source Sans Pro -->
     <link rel="stylesheet"
@@ -177,7 +177,7 @@ $websiteurl = env('WEBSITE_URL');
                                                         </td>
 
                                                         <td align="center" valign="top" class="graylist">
-                                                            <a href="{{ $websiteurl ?? 'https://jmi.vecospace.com/' }}talent-profile-detail.html?id={{ encodeStr($talent['id'] ?? '') }}"
+                                                            <a href="{{ $websiteurl ?? 'https://SDG.vecospace.com/' }}talent-profile-detail.html?id={{ encodeStr($talent['id'] ?? '') }}"
                                                                 class="btn btn-primary btn-sm" target="_blank">
                                                                 Open
                                                             </a>

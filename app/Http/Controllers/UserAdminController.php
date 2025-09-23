@@ -755,15 +755,19 @@ class UserAdminController extends Controller
     {
         $currentPage = $request->input('page', 1);
 
-        // Build filters if necessary (optional)
+        // Build filters array
         $filters = [
             'page' => $currentPage,
-            // Add other filter parameters if needed
+            'firstName' => $request->input('firstName'),
+            'lastName' => $request->input('lastName'),
+            'email' => $request->input('email'),
+            'userstype' => $request->input('userstype'), // if you want to filter by type also
         ];
 
+        // Remove null/empty values
         $filters = array_filter($filters, fn($value) => !is_null($value) && $value !== '');
 
-        // Fetch paginated registration list from API
+        // Fetch paginated registration list from API with filters
         $response = $this->apiService->getData('register/list', $filters);
 
         $registers = $response['DataList'] ?? [];
@@ -774,6 +778,7 @@ class UserAdminController extends Controller
 
         return view('manage_jobfair', compact('registers', 'total', 'perPage', 'lastPage', 'currentPage'));
     }
+
 
 
 
