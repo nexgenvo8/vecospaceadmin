@@ -53,6 +53,11 @@ $websiteurl = env('WEBSITE_URL');
                                 <li class="breadcrumb-item active">USER LIST
                                 </li>
                             </ol>
+                            <div>
+                                <strong>
+                                    Total: {{ $total ?? 0 }}
+                                </strong>
+                            </div>
                         </div>
                     </div>
                 </div><!-- /.container-fluid -->

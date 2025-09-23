@@ -47,14 +47,21 @@
                         <div class="col-sm-6">
                             <h1>NOTICE LIST</h1>
                         </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
+                        <div class="col-sm-6 text-right">
+                            <ol class="breadcrumb float-sm-right mb-1">
                                 <li class="breadcrumb-item"><a href="{{ route('index') }}">Home</a></li>
-                                <li class="breadcrumb-item active">Notice</li>
-                            </ol>
+                                <li class="breadcrumb-item active">NOTICE LIST</li>
+                            </ol><br>
+                            <div>
+                                <strong>
+                                    Total: {{ !empty($notices) ? count($notices) : 0 }}
+                                </strong>
+                            </div>
+
                         </div>
                     </div>
-                </div><!-- /.container-fluid -->
+                </div>
+                <!-- /.container-fluid -->
             </section>
 
             <!-- Main content -->
