@@ -1,3 +1,4 @@
+
 @if (session()->has('admin'))
     <script>
         setTimeout(function() {
