@@ -73,60 +73,52 @@
                     style="max-height: 80px; width: auto;">
             </a>
         </div>
-        <div class="card shadow-lg rounded-lg">
-            <div class="card-body login-card-body">
-                <h4 class="text-center mb-4 font-weight-bold">Sign In to Your Account</h4>
 
+        <div class="card shadow-lg rounded-3 overflow-hidden"
+            style="max-width: 400px; margin: auto; margin-top: 10px; border: none;">
+            <div class="card-header text-center p-2"
+                style="background: linear-gradient(135deg, #6a11cb, #2575fc); color: white;">
+                <h4 class="font-weight-bold mb-0">Welcome Back</h4>
+                <small>Sign in to your account</small>
+            </div>
+
+            <div class="card-body p-4 bg-light">
                 <form method="POST" action="{{ route('submitLogin') }}">
                     @csrf
 
-                    <div class="form-group">
-
-                        <label for="userId">User ID</label>
+                    <div class="form-group mb-3">
+                        <label for="userId" class="font-weight-bold">User ID</label>
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-user"></i></span>
+                                <span class="input-group-text bg-white"><i class="fas fa-user text-primary"></i></span>
                             </div>
-                            <input type="text" class="form-control" id="userId" name="userId"
+                            <input type="text" class="form-control border-left-0" id="userId" name="userId"
                                 placeholder="Enter your User ID" required>
                         </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="password">Password</label>
+                    <div class="form-group mb-3">
+                        <label for="password" class="font-weight-bold">Password</label>
                         <div class="input-group">
                             <div class="input-group-prepend">
-                                <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                                <span class="input-group-text bg-white"><i class="fas fa-lock text-primary"></i></span>
                             </div>
-                            <input type="password" class="form-control" id="password" name="password"
+                            <input type="password" class="form-control border-left-0" id="password" name="password"
                                 placeholder="Enter your Password" required>
                         </div>
                     </div>
 
-                    <div class="form-group form-check">
+                    <div class="form-group form-check mb-3">
                         <input type="checkbox" class="form-check-input" id="remember" name="remember">
                         <label class="form-check-label" for="remember">Remember Me</label>
                     </div>
 
-                    <button type="submit" class="btn btn-primary btn-block font-weight-bold">Sign In</button>
+                    <button type="submit" class="btn btn-primary btn-block font-weight-bold shadow-sm"
+                        style="background: linear-gradient(135deg, #6a11cb, #2575fc); border: none; padding: 10px; font-size: 16px;">
+                        Sign In
+                    </button>
                 </form>
-
-                <hr>
-
-                {{-- <div class="text-center">
-                    <p class="small text-muted">Or sign in using social accounts</p>
-                    <a href="#" class="btn btn-outline-primary btn-sm mx-1">
-                        <i class="fab fa-facebook-f"></i> Facebook
-                    </a>
-                    <a href="#" class="btn btn-outline-danger btn-sm mx-1">
-                        <i class="fab fa-google"></i> Google
-                    </a>
-                </div>
-
-                <p class="mt-3 text-center">
-                    <a href="#" class="text-decoration-none">Forgot your password?</a><br>
-                    <a href="#" class="text-decoration-none">Register a new account</a>
-                </p> --}}
+                <hr class="my-4">
             </div>
         </div>
     </div>
@@ -141,6 +133,30 @@
     <script src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/js/adminlte.min.js') }}"></script>
 </body>
 
+<style>
+    body {
+        background: linear-gradient(135deg, #ece9e6, #ffffff);
+        font-family: 'Segoe UI', sans-serif;
+    }
+
+    .input-group-text {
+        border-right: none;
+    }
+
+    .form-control {
+        border-left: none;
+    }
+
+    .form-control:focus {
+        box-shadow: 0 0 8px rgba(102, 126, 234, 0.6);
+        border-color: #6a11cb;
+    }
+
+    .btn:hover {
+        transform: translateY(-2px);
+        transition: all 0.3s ease;
+    }
+</style>
 
 </html>
 <script>
