@@ -75,7 +75,7 @@ $websiteurl = env('WEBSITE_URL');
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    <table id="example2" class="table table-bordered table-hover">
+                                    <table id="example1" class="table table-bordered table-hover">
                                         <thead class="thead-light">
                                             <tr>
                                                 <th>S.N.</th>

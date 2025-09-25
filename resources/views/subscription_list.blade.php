@@ -33,6 +33,20 @@
 <?php
 $websiteurl = env('WEBSITE_URL');
 ?>
+<style>
+    th {
+        cursor: pointer;
+    }
+
+    th.asc::after {
+        content: " ▲";
+    }
+
+    th.desc::after {
+        content: " ▼";
+    }
+</style>
+
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -47,20 +61,21 @@ $websiteurl = env('WEBSITE_URL');
                         <div class="col-sm-6">
                             <h1>USER LIST</h1>
                         </div>
-                        <div class="col-sm-6">
-                            <ol class="breadcrumb float-sm-right">
+                        <div class="col-sm-6 text-right">
+                            <ol class="breadcrumb float-sm-right mb-1">
                                 <li class="breadcrumb-item"><a href="{{ route('index') }}">Home</a></li>
-                                <li class="breadcrumb-item active">USER LIST
-                                </li>
-                            </ol>
+                                <li class="breadcrumb-item active">USER LIST</li>
+                            </ol><br>
                             <div>
                                 <strong>
-                                    Total: {{ $total ?? 0 }}
+                                    Total: {{ $total }}
                                 </strong>
                             </div>
+
                         </div>
                     </div>
-                </div><!-- /.container-fluid -->
+                </div>
+                <!-- /.container-fluid -->
             </section>
 
             <!-- Main content -->
@@ -74,22 +89,23 @@ $websiteurl = env('WEBSITE_URL');
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    <form method="GET" action="{{ route('user_subscription_list') }}" class="mb-3">
+                                    <form method="GET" action="{{ route('user_subscription_list') }}" class="mb-3"
+                                        id="searchForm">
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <input type="text" name="firstName" class="form-control"
+                                                <input type="text" name="firstName" class="form-control search-field"
                                                     placeholder="First Name" value="{{ request('firstName') }}">
                                             </div>
                                             <div class="col-md-3">
-                                                <input type="text" name="lastName" class="form-control"
+                                                <input type="text" name="lastName" class="form-control search-field"
                                                     placeholder="Last Name" value="{{ request('lastName') }}">
                                             </div>
                                             <div class="col-md-3">
-                                                <input type="text" name="email" class="form-control"
+                                                <input type="text" name="email" class="form-control search-field"
                                                     placeholder="Email" value="{{ request('email') }}">
                                             </div>
                                             <div class="col-md-3">
-                                                <select name="userstype" class="form-control">
+                                                <select name="userstype" class="form-control search-field">
                                                     <option value="">Select Type</option>
                                                     <option value="1"
                                                         {{ request('userstype') == 1 ? 'selected' : '' }}>Student
@@ -109,33 +125,49 @@ $websiteurl = env('WEBSITE_URL');
                                                 </select>
                                             </div>
                                         </div>
-                                        <div class="row mt-2 d-flex justify-content-cemter">
-                                            <div class="col-md-2">
-                                                <button type="submit" class="btn btn-primary me-2">Search</button>
+
+
+                                        <div class="row mt-3 d-flex justify-content-center">
+                                            <div class="col-md-2 text-center">
+                                                <button type="submit" class="btn btn-gradient w-100" id="searchButton"
+                                                    disabled>
+                                                    🔍 Search
+                                                </button>
+                                            </div>
+                                            <div class="col-md-2 text-center">
                                                 <a href="{{ route('user_subscription_list') }}"
-                                                    class="btn btn-secondary">Reset</a>
+                                                    class="btn btn-reset w-100">
+                                                    🔄 Reset
+                                                </a>
                                             </div>
                                         </div>
 
                                     </form>
+
+
+
                                     <div class="table-responsive"> <!-- Add this wrapper -->
-                                        <table id="example2" class="table table-bordered table-striped">
+                                        <table id="example" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
-                                                    <th style="white-space: nowrap">S. N.</th>
-                                                    <th style="white-space: nowrap">Name</th>
-                                                    <th style="white-space: nowrap">Type</th>
-                                                    <th style="white-space: nowrap">Course</th>
-                                                    <th style="white-space: nowrap">Branch</th>
-                                                    <th style="white-space: nowrap">Year Of Passing</th>
-                                                    <th style="white-space: nowrap">Industry</th>
-                                                    <th style="white-space: nowrap">Email ID</th>
-                                                    <th style="white-space: nowrap">Mobile</th>
-                                                    <th style="white-space: nowrap">Resend Email</th>
-                                                    <th style="white-space: nowrap">Date</th>
-                                                    <th style="white-space: nowrap">Status</th>
-                                                    <th style="white-space: nowrap">Action</th>
-                                                    <th style="white-space: nowrap">Open</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(0)">S. N.</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(1)">Name</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(2)">Type</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(3)">Course</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(4)">Branch</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(5)">Year Of
+                                                        Passing</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(6)">Industry</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(7)">Email ID</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(8)">Mobile</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(9)">Resend Email
+                                                    </th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(10)">Date</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(11)">Status
+                                                    </th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(12)">Action
+                                                    </th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(13)">Open</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -490,6 +522,96 @@ $websiteurl = env('WEBSITE_URL');
             $('[data-toggle="tooltip"]').tooltip();
         });
     </script>
+    <script>
+        let sortDirection = {};
+
+        function sortTable(colIndex) {
+            const table = document.getElementById("example");
+            const tbody = table.tBodies[0];
+            const rows = Array.from(tbody.rows);
+
+            const isNumeric = !isNaN(rows[0].cells[colIndex].innerText.trim());
+
+            // Toggle direction
+            sortDirection[colIndex] = !sortDirection[colIndex];
+            const dir = sortDirection[colIndex] ? 1 : -1;
+
+            rows.sort((a, b) => {
+                let x = a.cells[colIndex].innerText.trim();
+                let y = b.cells[colIndex].innerText.trim();
+
+                if (isNumeric) {
+                    x = parseFloat(x) || 0;
+                    y = parseFloat(y) || 0;
+                }
+
+                return x > y ? dir : x < y ? -dir : 0;
+            });
+
+            // Append sorted rows
+            rows.forEach(row => tbody.appendChild(row));
+
+            // Update sorting arrows
+            const ths = table.querySelectorAll("th");
+            ths.forEach(th => th.classList.remove("asc", "desc"));
+            ths[colIndex].classList.add(sortDirection[colIndex] ? "asc" : "desc");
+        }
+    </script>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            const searchButton = document.getElementById("searchButton");
+            const fields = document.querySelectorAll(".search-field");
+
+            function toggleSearchButton() {
+                let filled = Array.from(fields).some(field => field.value.trim() !== "");
+                searchButton.disabled = !filled;
+            }
+
+            fields.forEach(field => {
+                field.addEventListener("input", toggleSearchButton);
+            });
+
+            toggleSearchButton(); // Initial check
+        });
+    </script>
 </body>
 
 </html>
+<style>
+    /* Attractive gradient button */
+    .btn-gradient {
+        background: linear-gradient(45deg, #4CAF50, #81C784);
+        border: none;
+        color: white;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .btn-gradient:hover {
+        background: linear-gradient(45deg, #388E3C, #66BB6A);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    /* Disabled style */
+    .btn-gradient:disabled {
+        background: #cccccc !important;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+
+    /* Reset button style */
+    .btn-reset {
+        background: #f44336;
+        color: white;
+        font-weight: bold;
+        border: none;
+        transition: all 0.3s ease;
+    }
+
+    .btn-reset:hover {
+        background: #d32f2f;
+        transform: translateY(-2px);
+    }
+</style>
