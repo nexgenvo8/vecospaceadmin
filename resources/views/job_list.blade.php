@@ -75,9 +75,10 @@ $websiteurl = env('WEBSITE_URL');
                                 </div>
                                 <!-- /.card-header -->
                                 <div class="card-body">
-                                    <table id="example2" class="table table-bordered table-hover">
+                                    <table id="example1" class="table table-bordered table-hover">
                                         <thead class="thead-light">
                                             <tr>
+                                                <th>S.N.</th>
                                                 <th>TITLE</th>
                                                 <th>LOCATION</th>
                                                 <th>POSTED BY</th>
@@ -87,8 +88,9 @@ $websiteurl = env('WEBSITE_URL');
                                         </thead>
                                         <tbody>
                                             @if (!empty($jobs) && count($jobs) > 0)
-                                                @foreach ($jobs as $job)
+                                                @foreach ($jobs as $index => $job)
                                                     <tr>
+                                                        <td>{{ $index + 1 }}</td>
                                                         <td>{{ $job['companyName'] ?? '' }}</td>
                                                         <td>{{ $job['jobTitle'] ?? '' }}</td>
                                                         <td>{{ $job['jobLocation'] ?? '' }}</td>

@@ -1,4 +1,3 @@
-
 @if (session()->has('admin'))
     <script>
         setTimeout(function() {
@@ -31,6 +30,22 @@
     <link rel="stylesheet" href="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/css/adminlte.min.css') }}">
 
 </head>
+<?php
+$websiteurl = env('WEBSITE_URL');
+?>
+<style>
+    th {
+        cursor: pointer;
+    }
+
+    th.asc::after {
+        content: " ▲";
+    }
+
+    th.desc::after {
+        content: " ▼";
+    }
+</style>
 
 <body class="hold-transition sidebar-mini">
     <div class="wrapper">
@@ -74,43 +89,54 @@
                                 <!-- /.card-header -->
                                 <div class="card-body">
                                     {{-- 🔍 Search Bar (Top) --}}
-                                    <form method="GET" action="{{ route('registration_list') }}" class="mb-3">
+                                    <form method="GET" action="{{ route('registration_list') }}" id="searchForm"
+                                        class="mb-3">
                                         <div class="row">
                                             <div class="col-md-3">
-                                                <input type="text" name="firstName" class="form-control"
+                                                <input type="text" name="firstName" class="form-control auto-submit"
                                                     placeholder="First Name" value="{{ request('firstName') }}">
                                             </div>
                                             <div class="col-md-3">
-                                                <input type="text" name="lastName" class="form-control"
+                                                <input type="text" name="lastName" class="form-control auto-submit"
                                                     placeholder="Last Name" value="{{ request('lastName') }}">
                                             </div>
-                                            <div class="col-md-2">
-                                                <button type="submit" class="btn btn-primary w-100">Search</button>
+                                            <div class="col-md-3">
+                                                <input type="text" name="registrationNo"
+                                                    class="form-control auto-submit" placeholder="RegistrationNo"
+                                                    value="{{ request('registrationNo') }}">
                                             </div>
                                             <div class="col-md-2">
                                                 <a href="{{ route('registration_list') }}"
                                                     class="btn btn-secondary w-100">Reset</a>
                                             </div>
                                         </div>
-
                                     </form>
+
+
                                     {{-- 🔍 End Search Bar --}}
                                     <div class="table-responsive">
                                         <table id="example" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
-                                                    <th style="white-space: nowrap">S.N.</th>
-                                                    <th style="white-space: nowrap">UPC NO.</th>
-                                                    <th style="white-space: nowrap">NAME</th>
-                                                    <th style="white-space: nowrap">DEPARTMENT</th>
-                                                    <th style="white-space: nowrap">COURSE</th>
-                                                    <th style="white-space: nowrap">SEMESTER</th>
-                                                    <th style="white-space: nowrap">PASSING YEAR</th>
-                                                    <th style="white-space: nowrap">MOBILE</th>
-                                                    <th style="white-space: nowrap">GENDER</th>
-                                                    <th style="white-space: nowrap">UNIVERSITY ID</th>
-                                                    <th style="white-space: nowrap">STUDENT ID PROOF</th>
-                                                    <th style="white-space: nowrap">STUDENT ID TYPE</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(0)">S.N.</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(1)">UPC NO.</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(2)">NAME</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(3)">DEPARTMENT
+                                                    </th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(4)">COURSE</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(5)">SEMESTER</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(6)">PASSING YEAR
+                                                    </th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(7)">MOBILE</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(8)">GENDER</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(9)">UNIVERSITY ID
+                                                    </th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(10)">STUDENT ID
+                                                    </th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(11)">STUDENT ID
+                                                        PROOF</th>
+                                                    <th style="white-space: nowrap" onclick="sortTable(12)">STUDENT ID
+                                                        TYPE</th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -126,15 +152,28 @@
                                                         <td>{{ $register['passingyear'] ?? 'N/A' }}</td>
                                                         <td>{{ $register['mobile'] ?? 'N/A' }}</td>
                                                         <td>{{ $register['gender'] ?? 'N/A' }}</td>
-                                                        <td>{{ $register['studentId'] ?? 'N/A' }}</td>
-                                                        <td>
-                                                            @if (!empty($register['universityIdAttchment']))
-                                                                <a href="{{ asset('uploads/' . $register['universityIdAttchment']) }}"
-                                                                    target="_blank">View Proof</a>
-                                                            @else
-                                                                N/A
-                                                            @endif
+                                                        <td align="center" valign="middle" class="graylist">
+                                                            <?php if (!empty($register['universityIdAttchment'])) { ?>
+                                                            <a href="<?php echo $websiteurl; ?>uploads/<?php echo $register['universityIdAttchment']; ?>"
+                                                                target="BLANK__">View</a>
+                                                            <?php } else { ?>
+                                                            N/A
+                                                            <?php } ?>
                                                         </td>
+
+                                                        <td align="center" valign="middle" class="graylist">
+                                                            <?php echo !empty($register['studentId']) ? $register['studentId'] : 'N/A'; ?>
+                                                        </td>
+
+                                                        <td align="center" valign="middle" class="graylist">
+                                                            <?php if (!empty($register['studentphotoId'])) { ?>
+                                                            <a href="<?php echo $websiteurl; ?>uploads/<?php echo $register['studentphotoId']; ?>"
+                                                                target="BLANK__">View</a>
+                                                            <?php } else { ?>
+                                                            N/A
+                                                            <?php } ?>
+                                                        </td>
+
                                                         <td>
                                                             @if (isset($register['photoIdType']))
                                                                 @if ($register['photoIdType'] == 1)
@@ -275,6 +314,49 @@
                 "responsive": true,
             });
         });
+    </script>
+    <script>
+        document.querySelectorAll('.auto-submit').forEach(input => {
+            input.addEventListener('input', function() {
+                clearTimeout(this.delay);
+                this.delay = setTimeout(() => {
+                    document.getElementById('searchForm').submit();
+                }, 800); // ⏳ 0.6 sec delay (to avoid too many reloads)
+            });
+        });
+    </script>
+    <script>
+        let sortDirection = {};
+
+        function sortTable(n) {
+            const table = document.getElementById("example");
+            const rows = Array.from(table.rows).slice(1); // skip header
+            const isNumeric = !isNaN(rows[0].cells[n].innerText.trim());
+
+            // toggle direction
+            sortDirection[n] = !sortDirection[n];
+            const dir = sortDirection[n] ? 1 : -1;
+
+            rows.sort((a, b) => {
+                let x = a.cells[n].innerText.trim();
+                let y = b.cells[n].innerText.trim();
+
+                if (isNumeric) {
+                    x = parseFloat(x) || 0;
+                    y = parseFloat(y) || 0;
+                }
+
+                return x > y ? dir : x < y ? -dir : 0;
+            });
+
+            // reset table
+            rows.forEach(row => table.tBodies[0].appendChild(row));
+
+            // update arrow indicator
+            const ths = table.querySelectorAll("th");
+            ths.forEach(th => th.classList.remove("asc", "desc"));
+            ths[n].classList.add(sortDirection[n] ? "asc" : "desc");
+        }
     </script>
 </body>
 
