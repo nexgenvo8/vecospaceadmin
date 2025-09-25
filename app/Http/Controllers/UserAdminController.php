@@ -761,7 +761,8 @@ class UserAdminController extends Controller
             'firstName' => $request->input('firstName'),
             'lastName' => $request->input('lastName'),
             'email' => $request->input('email'),
-            'userstype' => $request->input('userstype'), // if you want to filter by type also
+            'userstype' => $request->input('userstype'),
+            'registrationNo' => $request->input('registrationNo'),
         ];
 
         // Remove null/empty values
