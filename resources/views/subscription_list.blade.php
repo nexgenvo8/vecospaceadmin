@@ -209,7 +209,10 @@ $websiteurl = env('WEBSITE_URL');
                                                             </form>
                                                         </td>
 
-                                                        <td>{{ $user['regDate'] ?? '-' }}</td>
+                                                        <td>
+                                                            {{ isset($user['regDate']) ? \Carbon\Carbon::parse($user['regDate'])->setTimezone('Asia/Kolkata')->format('d-m-Y H:i:s') : '-' }}
+                                                        </td>
+
                                                         <td>
                                                             <!-- Button -->
                                                             <button type="button" class="btn btn-link"
