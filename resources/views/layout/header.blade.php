@@ -204,7 +204,7 @@
                             </script>
                         @else
                             <div class="info">
-                                <a href="{{ route('index') }}" class="d-block">{{ session('admin')['name'] }}</a>
+                                <a href="{{ route('index') }}" class="d-block">{{ session('admin')['username'] }}</a>
                             </div>
                         @endif
 

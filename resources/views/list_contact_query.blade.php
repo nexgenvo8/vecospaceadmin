@@ -80,7 +80,7 @@
                                                 <th>EMAIL ID</th>
                                                 <th>QUERY</th>
                                                 <th>DATE</th>
-                                                <th>STATUS</th>
+                                                {{-- <th>STATUS</th> --}}
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -98,7 +98,7 @@
                                                                 N/A
                                                             @endif
                                                         </td>
-                                                        <td>
+                                                        {{-- <td>
                                                             <!-- Status Button (Trigger Modal) -->
                                                             <button type="button"
                                                                 class="btn btn-link p-0 m-0 align-baseline"
@@ -168,7 +168,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                        </td>
+                                                        </td> --}}
                                                     </tr>
                                                 @endforeach
                                             @else

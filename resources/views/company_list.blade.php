@@ -95,7 +95,25 @@ $websiteurl = env('WEBSITE_URL');
                                                         <td>{{ $company['companyName'] ?? '' }}</td>
                                                         <td>{{ $company['UserDetail']['UserName'] ?? '' }}</td>
                                                         <td>{{ $company['UserDetail']['email'] ?? '' }}</td>
-                                                        <td>{{ $company['dateAdded'] ?? '' }}</td>
+                                                        <td>
+                                                            @php
+                                                                $rawDate = $company['dateAdded'] ?? null;
+                                                                $formattedDate = '';
+
+                                                                if (
+                                                                    !empty($rawDate) &&
+                                                                    $rawDate !== '0000-00-00' &&
+                                                                    $rawDate !== '30-11--0001'
+                                                                ) {
+                                                                    $timestamp = strtotime($rawDate);
+                                                                    if ($timestamp && $timestamp > 0) {
+                                                                        $formattedDate = date('d-m-Y', $timestamp);
+                                                                    }
+                                                                }
+                                                            @endphp
+
+                                                            {{ $formattedDate }}
+                                                        </td>
                                                         <td>
                                                             <!-- Status Button (Trigger Modal) -->
                                                             <button type="button"
