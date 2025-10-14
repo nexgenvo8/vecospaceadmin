@@ -298,7 +298,7 @@
                                             </div>
                                         </div>
                                         <div class="col-md-4">
-                                            <h6>16. Notice Board Master</h6>
+                                            <h6><span class="badge-number">16</span> Notice Board Master</h6>
 
                                             <div class="form-check form-switch">
                                                 <input class="form-check-input" type="checkbox" name="permissions[]"
