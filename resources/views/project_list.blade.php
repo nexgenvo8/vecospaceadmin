@@ -93,7 +93,7 @@ $websiteurl = env('WEBSITE_URL');
                                                         <td>{{ $project['projectTitle'] ?? 'N/A' }}</td>
                                                         <td>{{ $project['UserDetail']['UserName'] ?? 'N/A' }}</td>
                                                         <td>{{ $project['UserDetail']['email'] ?? 'N/A' }}</td>
-                                                        <td>
+                                                        <td style="white-space: nowrap">
                                                             {{ !empty($project['postedDate']) ? \Carbon\Carbon::parse($project['postedDate'])->format('d-m-Y') : 'N/A' }}
                                                         </td>
                                                         <td>
@@ -168,10 +168,19 @@ $websiteurl = env('WEBSITE_URL');
                                                         </td>
 
 
-                                                        <td>
-                                                            <a href="{{ $websiteurl }}"
-                                                                class="btn btn-sm btn-primary">Open</a>
-                                                        </td>
+
+                                                        @php
+																$baseUrl = rtrim($websiteurl, '/') . '/';
+															@endphp
+
+															<td>
+																<a href="{{ $baseUrl }}preview-project.html?projId={{ encodeStr($project['id']) }}"
+																   target="_blank"
+																   class="btn btn-sm btn-primary">
+																	Open
+																</a>
+															</td>
+
                                                     </tr>
                                                 @endforeach
                                             @else
@@ -183,6 +192,7 @@ $websiteurl = env('WEBSITE_URL');
                                         </tbody>
 
                                     </table>
+									
                                 </div>
                                 <!-- /.card-body -->
                             </div>

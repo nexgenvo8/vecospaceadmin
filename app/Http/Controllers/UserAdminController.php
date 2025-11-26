@@ -9,7 +9,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Session;
 use Maatwebsite\Excel\Facades\Excel;
-
+use App\Exports\RegisterExport;
 class UserAdminController extends Controller
 {
     protected $apiService;
@@ -74,6 +74,8 @@ class UserAdminController extends Controller
             'userId' => $request->input('userId'),
             'password' => $request->input('password'),
         ];
+
+     
 
         $response = $this->apiService->postData('adminlogin', $data);
 
@@ -211,6 +213,31 @@ class UserAdminController extends Controller
     }
 
 
+ public function deletepost(Request $request)
+{
+    // Validate request
+    $request->validate([
+        'id' => 'required|integer',
+    ]);
+
+    // Prepare data for API
+    $data = ['id' => $request->input('id')];
+
+    // Send delete request to API
+    $response = $this->apiService->postData('post/delete', $data);
+
+    // If API delete success
+    if (isset($response['error']) && $response['error'] === false) {
+        return redirect()
+            ->route('post_list')   // 🔥 redirect to your post list page
+            ->with('success', 'Post deleted successfully');
+    }
+
+    // If API fails
+    return redirect()
+        ->route('post_list')
+        ->with('error', $response['message'] ?? 'Failed to delete post');
+}
 
 
 
@@ -285,14 +312,39 @@ class UserAdminController extends Controller
         return redirect()->back()->with('error', $errorMessage);
     }
 
+public function departmentListData(Request $request)
+{
+    // Get current page from URL, default to 1
+    $page = $request->get('page', 1);
 
-    public function departmentListData()
-    {
-        $response = $this->apiService->getData('department/list');
+    // Fetch departments from API with pagination
+    $response = $this->apiService->getData('department/list',['page' => $page]);
 
-        $departments = $response['DataList'] ?? []; // key lowercase hai
-        return view('manage_department', compact('departments'));
-    }
+    // Extract department list
+    $departments = $response['DataList'] ?? [];
+
+    // Extract pagination info from API response, fallback to defaults
+    $departments = $departments['DataList'] ?? [];
+        $total = $response['total'] ?? 0;
+        $perPage = $response['per_page'] ?? 10;
+        $currentPage = $response['current_page'] ?? 1;
+        $lastPage = $response['last_page'] ?? 1;
+
+
+    // Return view with data
+    return view('manage_department', compact(
+        'departments',
+            'total',
+            'perPage',
+            'lastPage',
+            'currentPage'
+    ));
+}
+
+
+
+
+
 
     public function noticeBoardList()
     {
@@ -348,18 +400,35 @@ class UserAdminController extends Controller
 
 
 
-    public function manageCourse()
+    public function manageCourse(Request $request)
     {
+        $page = $request->get('page', 1);
+
         // Fetch departments
         $deptResponse = $this->apiService->getData('department/list');
         $departmentdata = $deptResponse['DataList'] ?? [];
 
-        // Fetch courses
-        $courseResponse = $this->apiService->getData('course/list');
-        $courses = $courseResponse['DataList'] ?? [];
+        // Fetch courses for current page
+        // Pass page as parameter to API
+        $courseResponse = $this->apiService->getData('course/list', ['page' => $page]);
 
-        return view('manage_course', compact('departmentdata', 'courses'));
+        // Extract courses and pagination info
+        $courses = $courseResponse['DataList'] ?? [];
+        $total = $courseResponse['total'] ?? 0;
+        $perPage = $courseResponse['per_page'] ?? 10;
+        $currentPage = $courseResponse['current_page'] ?? 1;
+        $lastPage = $courseResponse['last_page'] ?? 1;
+
+        return view('manage_course', compact(
+            'departmentdata',
+            'courses',
+            'total',
+            'perPage',
+            'lastPage',
+            'currentPage'
+        ));
     }
+
 
     // 🔹 Add new course
     public function storeCourse(Request $request)
@@ -409,10 +478,10 @@ class UserAdminController extends Controller
     {
         // Departments
         $departmentResponse = $this->apiService->getData('department/list');
-        $totalDepartments = $departmentResponse['TotalRecord'] ?? 0;
+        $totalDepartments = $departmentResponse['total'] ?? 0;
 
         // Registers (with user type summary)
-        $registerResponse = $this->apiService->getData('register/list');
+        $registerResponse = $this->apiService->getData('user/listusers');
         $totalRegisters = $registerResponse['total'] ?? 0;
 
         // Extract user type summary if available
@@ -430,7 +499,11 @@ class UserAdminController extends Controller
 
         // Courses
         $courseResponse = $this->apiService->getData('course/list');
-        $totalCourses = $courseResponse['TotalRecord'] ?? 0;
+        $totalCourses = $courseResponse['total'] ?? 0;
+		// Courses
+        $PlacementRegistration = $this->apiService->getData('register/list');
+        $totalPlacementRegistration = $PlacementRegistration['total'] ?? 0;
+		
 
         // Pass all data to view
         return view('index', compact(
@@ -438,7 +511,8 @@ class UserAdminController extends Controller
             'totalRegisters',
             'totalPosts',
             'totalCourses',
-            'userTypeSummary'
+            'userTypeSummary',
+			'totalPlacementRegistration'
         ));
     }
 
@@ -703,7 +777,7 @@ class UserAdminController extends Controller
             'status' => (int) $request->input('status'),
         ];
 
-        $response = $this->apiService->postData('post/update', $data);
+        $response = $this->apiService->postData('post/status-update', $data);
 
 
         if (isset($response['error']) && $response['error'] === false) {
@@ -843,12 +917,97 @@ class UserAdminController extends Controller
 
         $dataList = $response['DataList'] ?? [];
         $total = $response['total'] ?? 0;
-        $perPage = $response['per_page'] ?? 10;
+        $perPage = $response['per_page'] ?? 50000;
         $lastPage = $response['last_page'] ?? 1;
         $currentPage = $response['current_page'] ?? 1;
 
         return view('subscription_list', compact('dataList', 'courses', 'departments', 'total', 'perPage', 'lastPage', 'currentPage'));
     }
+
+
+public function exportUsers(Request $request)
+{
+    try {
+        \Log::info('Export started');
+
+        // Simple test - without pagination
+        $filters = [
+            'firstName' => $request->firstName,
+            'lastName'  => $request->lastName,
+            'email'     => $request->email,
+            'userstype' => $request->userstype,
+            'page'      => 1,
+            'per_page'  => 5000, // Small number se start karein
+        ];
+
+        $filters = array_filter($filters);
+        \Log::info('Filters: ' . json_encode($filters));
+
+        // Single API call
+        $response = $this->apiService->getData('user/listusers', $filters);
+        
+        \Log::info('API Response received');
+        \Log::info('Data count: ' . count($response['DataList'] ?? []));
+
+        $dataList = $response['DataList'] ?? [];
+
+        // Simple CSV export
+        $fileName = 'users_export.csv';
+        
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => "attachment; filename=\"$fileName\"",
+        ];
+
+        return response()->stream(function() use ($dataList) {
+            $file = fopen('php://output', 'w');
+            fwrite($file, "\xEF\xBB\xBF");
+            
+            // Headers - ONLY REQUESTED FIELDS
+            fputcsv($file, [
+                'S. N',
+                'Name',
+                'Course', 
+                'Branch',
+                'Year of Passing',
+                'Industry',
+                'Email',
+                'Mobile',
+                'DOB',
+                'Created At'
+            ]);
+            
+            // Data - ONLY REQUESTED FIELDS
+            foreach ($dataList as $index => $user) {
+                fputcsv($file, [
+                    $index + 1, // S. N
+                    trim(($user['firstName'] ?? '') . ' ' . ($user['lastName'] ?? '')), // Name
+                    $user['coursename'] ?? '-', // Course
+                    $user['departmentname'] ?? '-', // Branch
+                    $user['passingyear'] ?? '-', // Year of Passing
+                    $user['industryName'] ?? '-', // Industry
+                    $user['email'] ?? '-', // Email
+                    $user['mobile'] ?? '-', // Mobile
+                    $user['dob'] ?? '-', // DOB
+                    isset($user['created_at']) ? 
+                        \Carbon\Carbon::parse($user['created_at'])
+                            ->setTimezone('Asia/Kolkata')
+                            ->format('d-m-Y H:i:s') : '-' // Created At
+                ]);
+            }
+            
+            fclose($file);
+        }, 200, $headers);
+
+    } catch (\Exception $e) {
+        \Log::error('Export ERROR: ' . $e->getMessage());
+        \Log::error('Stack trace: ' . $e->getTraceAsString());
+        
+        return back()->with('error', 'Export failed: ' . $e->getMessage());
+    }
+}
+
+
 
 
 
@@ -936,7 +1095,7 @@ class UserAdminController extends Controller
         $data = [
             'to' => $email,
             'userId' => $userId,
-            'settingId' => 3,
+            'settingId' => 1,
             'templateId' => 123,
         ];
 
@@ -1241,6 +1400,65 @@ class UserAdminController extends Controller
             'error' => true,
             'message' => $response['message'] ?? 'Failed to delete page'
         ], 400);
+    }
+	
+	
+	public function export(Request $request)
+    {
+
+        $filters = [
+            'firstName' => $request->input('firstName'),
+            'lastName' => $request->input('lastName'),
+            'email' => $request->input('email'),
+            'userstype' => $request->input('userstype'),
+            'registrationNo' => $request->input('registrationNo'),
+
+            'export' => 'all',
+            'page' => 1,
+            'per_page' => 999999, // max records
+        ];
+
+        // remove empty filters
+        $filters = array_filter($filters, fn($v) => $v !== null && $v !== '');
+
+        // CALL API (SAME AS TABLE)
+        $response = $this->apiService->getData('register/list', $filters);
+
+        $registers = $response['DataList'] ?? [];
+
+        if (empty($registers)) {
+            return back()->with('error', 'No data found to export!');
+        }
+
+        // BUILD EXCEL DATA
+        $excelData = [];
+        foreach ($registers as $r) {
+            $excelData[] = [
+                $r['registrationNo'] ?? 'N/A',
+                ($r['firstName'] ?? '') . ' ' . ($r['lastName'] ?? ''),
+                $r['departmentname'] ?? 'N/A',
+                $r['coursename'] ?? 'N/A',
+                $r['semester'] ?? 'N/A',
+                $r['passingyear'] ?? 'N/A',
+                $r['mobile'] ?? 'N/A',
+                $r['gender'] ?? 'N/A',
+
+                // IMPORTANT: Insert VIEW LINK in excel
+                !empty($r['universityIdAttchment'])
+                ? url('uploads/' . $r['universityIdAttchment'])
+                : 'N/A',
+
+                $r['studentId'] ?? 'N/A',
+
+                !empty($r['studentphotoId'])
+                ? url('uploads/' . $r['studentphotoId'])
+                : 'N/A',
+
+                ($r['photoIdType'] == 1 ? 'Aadhar' : ($r['photoIdType'] == 2 ? 'PAN' : 'Other')),
+            ];
+        }
+
+        return Excel::download(new RegisterExport($excelData), 'registers.xlsx');
     }
 
 }

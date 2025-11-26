@@ -34,5 +34,6 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+	 'website_url' => env('WEBSITE_URL', 'https://jmi.vecospace.com/'),
 
 ];

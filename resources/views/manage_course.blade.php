@@ -54,10 +54,11 @@
                                 <li class="breadcrumb-item active">COURSE</li>
                             </ol><br>
                             <div>
-                                <strong>
-                                    Total: {{ !empty($courses) ? count($courses) : 0 }}
-                                </strong>
-                            </div>
+								<strong>
+									Total: {{ $total }}
+								</strong>
+							</div>
+
                         </div>
                     </div>
                 </div>
@@ -124,6 +125,66 @@
                                             @endforeach
                                         </tbody>
                                     </table>
+									@if ($lastPage > 1)
+                                        <nav aria-label="Page navigation example">
+                                            <ul class="pagination justify-content-end">
+
+                                                <!-- Previous Button -->
+                                                <li class="page-item {{ $currentPage == 1 ? 'disabled' : '' }}">
+                                                    <a class="page-link"
+                                                        href="{{ $currentPage > 1 ? request()->fullUrlWithQuery(['page' => $currentPage - 1]) : '#' }}">
+                                                        Previous
+                                                    </a>
+                                                </li>
+
+                                                <!-- First Page -->
+                                                <li class="page-item {{ $currentPage == 1 ? 'active' : '' }}">
+                                                    <a class="page-link"
+                                                        href="{{ request()->fullUrlWithQuery(['page' => 1]) }}">1</a>
+                                                </li>
+
+                                                <!-- Ellipsis if current page is far from first page -->
+                                                @if ($currentPage > 3)
+                                                    <li class="page-item disabled"><span class="page-link">...</span>
+                                                    </li>
+                                                @endif
+
+                                                <!-- Pages around current page -->
+                                                @for ($page = max(2, $currentPage - 1); $page <= min($lastPage - 1, $currentPage + 1); $page++)
+                                                    <li class="page-item {{ $currentPage == $page ? 'active' : '' }}">
+                                                        <a class="page-link"
+                                                            href="{{ request()->fullUrlWithQuery(['page' => $page]) }}">{{ $page }}</a>
+                                                    </li>
+                                                @endfor
+
+                                                <!-- Ellipsis if current page is far from last page -->
+                                                @if ($currentPage < $lastPage - 2)
+                                                    <li class="page-item disabled"><span class="page-link">...</span>
+                                                    </li>
+                                                @endif
+
+                                                <!-- Last Page -->
+                                                @if ($lastPage > 1)
+                                                    <li
+                                                        class="page-item {{ $currentPage == $lastPage ? 'active' : '' }}">
+                                                        <a class="page-link"
+                                                            href="{{ request()->fullUrlWithQuery(['page' => $lastPage]) }}">{{ $lastPage }}</a>
+                                                    </li>
+                                                @endif
+
+                                                <!-- Next Button -->
+                                                <li
+                                                    class="page-item {{ $currentPage == $lastPage ? 'disabled' : '' }}">
+                                                    <a class="page-link"
+                                                        href="{{ $currentPage < $lastPage ? request()->fullUrlWithQuery(['page' => $currentPage + 1]) : '#' }}">
+                                                        Next
+                                                    </a>
+                                                </li>
+
+                                            </ul>
+                                        </nav>
+                                    @endif
+
                                 </div>
 
 
@@ -233,8 +294,8 @@
                                                     <!-- Course Code -->
                                                     <div class="form-group">
                                                         <label>Course Code</label>
-                                                        <input type="text" name="course_code" id="edit_code"
-                                                            class="form-control" required>
+                                                        <input type="text" id="edit_course_code" name="course_code"
+                                                            class="form-control">
                                                     </div>
 
                                                     <!-- Status Dropdown -->
@@ -260,16 +321,18 @@
                                     </div>
                                 </div>
 
-                                <script>
-                                    $(document).on("click", ".editBtn", function() {
-                                        $("#edit_id").val($(this).data("id"));
-                                        $("#edit_course").val($(this).data("course"));
-                                        $("#edit_code").val($(this).data("code"));
-                                        $("#edit_status").val($(this).data("status")); // 1 or 0
-                                        $("#edit_department").val($(this).data("dep_id")); // department ID
-                                        $("#editModal").modal("show");
-                                    });
-                                </script>
+									<script>
+									$(document).on("click", ".editBtn", function() {
+										$("#edit_id").val($(this).data("id"));
+										$("#edit_course").val($(this).data("course"));
+										$("#edit_code").val($(this).data("code")); // existing code
+										$("#edit_course_code").val($(this).data("code")); // add this line
+										$("#edit_status").val($(this).data("status")); // 1 or 0
+										$("#edit_department").val($(this).data("dep_id")); // department ID
+										$("#editModal").modal("show");
+									});
+									</script>
+
                                 <!-- /.card-body -->
                             </div>
                             <!-- /.card -->

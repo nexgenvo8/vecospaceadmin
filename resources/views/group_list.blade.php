@@ -101,7 +101,7 @@ $websiteurl = env('WEBSITE_URL');
                                                         <td>{{ $group['groupModerator']['email'] ?? 'N/A' }}</td>
 
                                                         {{-- Founded Date --}}
-                                                        <td>
+                                                        <td style="white-space: nowrap">
                                                             {{ isset($group['dateAdded']) ? date('m/d/Y H:i:s', $group['dateAdded']) : 'N/A' }}
                                                         </td>
 
@@ -114,10 +114,11 @@ $websiteurl = env('WEBSITE_URL');
                                                                 data-toggle="modal"
                                                                 data-target="#statusModalGroup{{ $group['id'] }}">
                                                                 @if ($group['status'] == 1)
-                                                                    <span class="badge badge-success">Active</span>
-                                                                @else
-                                                                    <span class="badge badge-danger">Inactive</span>
-                                                                @endif
+																	<span class="badge badge-danger">Inactive</span>
+																@else
+																	<span class="badge badge-success">Active</span>
+																@endif
+
                                                             </button>
 
                                                             <!-- Modal -->
@@ -143,14 +144,11 @@ $websiteurl = env('WEBSITE_URL');
 
                                                                         <div class="modal-body">
                                                                             @if ($group['status'] == 1)
-                                                                                <p>Are you sure you want to
-                                                                                    <b>Deactivate</b> this group?
-                                                                                </p>
-                                                                            @else
-                                                                                <p>Are you sure you want to
-                                                                                    <b>Activate</b> this group?
-                                                                                </p>
-                                                                            @endif
+																				<p>Are you sure you want to <b>Activate</b> this group?</p>
+																			@else
+																				<p>Are you sure you want to <b>Deactivate</b> this group?</p>
+																			@endif
+
                                                                         </div>
 
                                                                         <div class="modal-footer">
@@ -165,8 +163,8 @@ $websiteurl = env('WEBSITE_URL');
                                                                                 @csrf
                                                                                 <input type="hidden" name="id"
                                                                                     value="{{ $group['id'] }}">
-                                                                                <input type="hidden" name="status"
-                                                                                    value="{{ $group['status'] == 0 ? 1 : 0 }}">
+                                                                                <input type="hidden" name="status" value="{{ $group['status'] == 0 ? 1 : 0 }}">
+
                                                                                 <button type="submit"
                                                                                     class="btn btn-primary">Yes</button>
                                                                             </form>

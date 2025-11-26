@@ -40,6 +40,8 @@ use Illuminate\Support\Testing\Fakes\QueueFake;
  * @method static mixed getJobBackoff(mixed $job)
  * @method static mixed getJobExpiration(mixed $job)
  * @method static void createPayloadUsing(callable|null $callback)
+ * @method static array getConfig()
+ * @method static \Illuminate\Queue\Queue setConfig(array $config)
  * @method static \Illuminate\Container\Container getContainer()
  * @method static void setContainer(\Illuminate\Container\Container $container)
  * @method static \Illuminate\Support\Testing\Fakes\QueueFake except(array|string $jobsToBeQueued)
@@ -94,6 +96,57 @@ class Queue extends Facade
         return tap(new QueueFake(static::getFacadeApplication(), $jobsToFake, $actualQueueManager), function ($fake) {
             static::swap($fake);
         });
+    }
+
+    /**
+     * Replace the bound instance with a fake that fakes all jobs except the given jobs.
+     *
+     * @param  string[]|string  $jobsToAllow
+     * @return \Illuminate\Support\Testing\Fakes\QueueFake
+     */
+    public static function fakeExcept($jobsToAllow)
+    {
+        return static::fake()->except($jobsToAllow);
+    }
+
+    /**
+     * Replace the bound instance with a fake during the given callable's execution.
+     *
+     * @param  callable  $callable
+     * @param  array  $jobsToFake
+     * @return mixed
+     */
+    public static function fakeFor(callable $callable, array $jobsToFake = [])
+    {
+        $originalQueueManager = static::getFacadeRoot();
+
+        static::fake($jobsToFake);
+
+        try {
+            return $callable();
+        } finally {
+            static::swap($originalQueueManager);
+        }
+    }
+
+    /**
+     * Replace the bound instance with a fake during the given callable's execution.
+     *
+     * @param  callable  $callable
+     * @param  array  $jobsToAllow
+     * @return mixed
+     */
+    public static function fakeExceptFor(callable $callable, array $jobsToAllow = [])
+    {
+        $originalQueueManager = static::getFacadeRoot();
+
+        static::fakeExcept($jobsToAllow);
+
+        try {
+            return $callable();
+        } finally {
+            static::swap($originalQueueManager);
+        }
     }
 
     /**

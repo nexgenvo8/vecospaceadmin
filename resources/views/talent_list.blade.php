@@ -99,12 +99,12 @@ $websiteurl = env('WEBSITE_URL');
                                                                 style="border-radius: 50%;"
                                                                 onerror="this.onerror=null;this.src='{{ asset('images/avatar.png') }}';">
                                                         </td>
-                                                        <td>{{ $talent['TalentName'] ?? 'N/A' }}</td>
-                                                        <td>{{ $talent['ShortDescription'] ?? 'N/A' }}</td>
-                                                        <td>
-                                                            {{ !empty($talent['DateAdded']) ? \Carbon\Carbon::parse($talent['DateAdded'])->format('Y-m-d') : 'N/A' }}
+                                                        <td>{{ $talent['TalentName'] ?? ' ' }}</td>
+                                                        <td>{{ $talent['ShortDescription'] ?? ' ' }}</td>
+                                                        <td style="white-space: nowrap">
+                                                            {{ !empty($talent['DateAdded']) ? \Carbon\Carbon::parse($talent['DateAdded'])->format('Y-m-d') : ' ' }}
                                                         </td>
-                                                        <td>{{ $talent['UserDetail']['UserName'] ?? 'N/A' }}</td>
+                                                        <td>{{ $talent['UserDetail']['UserName'] ?? ' ' }}</td>
                                                         <td>
                                                             <!-- Status Button (Trigger Modal) -->
                                                             <button type="button"

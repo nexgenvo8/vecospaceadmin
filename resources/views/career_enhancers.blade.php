@@ -99,7 +99,7 @@ $websiteurl = env('WEBSITE_URL');
                                                             {{ $company['StateId'] ?? '' }},
                                                             {{ $company['CountryId'] ?? '' }}</td>
                                                         <td>{{ $company['CompleteAddress'] ?? '' }}</td>
-                                                        <td>{{ !empty($company['DateAdded']) ? \Carbon\Carbon::parse($company['DateAdded'])->format('Y-m-d') : '' }}
+                                                        <td style="white-space: nowrap">{{ !empty($company['DateAdded']) ? \Carbon\Carbon::parse($company['DateAdded'])->format('Y-m-d') : '' }}
                                                         </td>
                                                         <td>{{ $company['UserDetails']['UserName'] ?? '' }}</td>
                                                         <td>

@@ -1,3 +1,9 @@
+<?php 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+
+?>
 @if (session()->has('admin'))
     <script>
         setTimeout(function() {
@@ -5,6 +11,7 @@
         }, 30 * 60 * 1000); // 5 minutes
     </script>
 @endif
+
 <!DOCTYPE html>
 <html lang="en">
 
@@ -58,7 +65,7 @@ $websiteurl = env('WEBSITE_URL');
                 <div class="container-fluid">
                     <div class="row mb-2">
                         <div class="col-sm-6">
-                            <h1>MANAGE JOB FAIR REGISTRATION </h1>
+                            <h1>MANAGE PLACEMENT REGISTRATION </h1>
                         </div>
                         <div class="col-sm-6 text-right">
                             <ol class="breadcrumb float-sm-right mb-1">
@@ -82,6 +89,11 @@ $websiteurl = env('WEBSITE_URL');
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
+						 <div class="d-flex justify-content-end mb-3">
+							<button id="exportAll" class="btn btn-success">Export Excel</button>
+						</div>
+
+
                             <div class="card">
                                 <div class="card-header">
                                     <h3 class="card-title">REGISTRATION LIST</h3>
@@ -115,7 +127,7 @@ $websiteurl = env('WEBSITE_URL');
 
                                     {{-- 🔍 End Search Bar --}}
                                     <div class="table-responsive">
-                                        <table id="example" class="table table-bordered table-striped">
+                                        <table id="example1" class="table table-bordered table-striped">
                                             <thead>
                                                 <tr>
                                                     <th style="white-space: nowrap" onclick="sortTable(0)">S.N.</th>
@@ -143,26 +155,26 @@ $websiteurl = env('WEBSITE_URL');
                                                 @foreach ($registers as $index => $register)
                                                     <tr>
                                                         <td>{{ $index + 1 }}</td>
-                                                        <td>{{ $register['registrationNo'] ?? 'N/A' }}</td>
+                                                        <td>{{ $register['registrationNo'] ?? '-' }}</td>
                                                         <td>{{ $register['firstName'] . ' ' . $register['lastName'] }}
                                                         </td>
-                                                        <td>{{ $register['departmentname'] ?? 'N/A' }}</td>
-                                                        <td>{{ $register['coursename'] ?? 'N/A' }}</td>
-                                                        <td>{{ $register['semester'] ?? 'N/A' }}</td>
-                                                        <td>{{ $register['passingyear'] ?? 'N/A' }}</td>
-                                                        <td>{{ $register['mobile'] ?? 'N/A' }}</td>
-                                                        <td>{{ $register['gender'] ?? 'N/A' }}</td>
+                                                        <td>{{ $register['departmentname'] ?? ' ' }}</td>
+                                                        <td>{{ $register['coursename'] ?? ' ' }}</td>
+                                                        <td>{{ $register['semester'] ?? ' ' }}</td>
+                                                        <td>{{ $register['passingyear'] ?? ' ' }}</td>
+                                                        <td>{{ $register['mobile'] ?? ' ' }}</td>
+                                                        <td>{{ $register['gender'] ?? ' ' }}</td>
                                                         <td align="center" valign="middle" class="graylist">
                                                             <?php if (!empty($register['universityIdAttchment'])) { ?>
                                                             <a href="<?php echo $websiteurl; ?>uploads/<?php echo $register['universityIdAttchment']; ?>"
                                                                 target="BLANK__">View</a>
                                                             <?php } else { ?>
-                                                            N/A
+                                                            
                                                             <?php } ?>
                                                         </td>
 
                                                         <td align="center" valign="middle" class="graylist">
-                                                            <?php echo !empty($register['studentId']) ? $register['studentId'] : 'N/A'; ?>
+                                                            <?php echo !empty($register['studentId']) ? $register['studentId'] : ' '; ?>
                                                         </td>
 
                                                         <td align="center" valign="middle" class="graylist">
@@ -170,7 +182,7 @@ $websiteurl = env('WEBSITE_URL');
                                                             <a href="<?php echo $websiteurl; ?>uploads/<?php echo $register['studentphotoId']; ?>"
                                                                 target="BLANK__">View</a>
                                                             <?php } else { ?>
-                                                            N/A
+                                                           
                                                             <?php } ?>
                                                         </td>
 
@@ -184,7 +196,7 @@ $websiteurl = env('WEBSITE_URL');
                                                                     Other
                                                                 @endif
                                                             @else
-                                                                N/A
+                                                                
                                                             @endif
                                                         </td>
                                                     </tr>
@@ -294,27 +306,53 @@ $websiteurl = env('WEBSITE_URL');
     <script src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/js/adminlte.min.js') }}"></script>
     <!-- AdminLTE for demo purposes -->
     <script src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/js/demo.js') }}"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
 
     <!-- Page specific script -->
-    <script>
-        $(function() {
-            $("#example1").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-            $('#example2').DataTable({
-                "paging": true,
-                "lengthChange": false,
-                "searching": false,
-                "ordering": true,
-                "info": true,
-                "autoWidth": false,
-                "responsive": true,
-            });
-        });
-    </script>
+<script>
+$(document).ready(function () {
+
+    // DataTable initialization
+    var dataTable = $("#example1").DataTable({
+        responsive: true,
+        lengthChange: false,
+        autoWidth: false,
+        pageLength: 10
+    });
+
+    // Export All Click
+    $("#exportAll").on("click", function () {
+
+        // Save current page
+        var currentPage = dataTable.page();
+
+        // Show all rows
+        dataTable.page.len(-1).draw();
+
+        setTimeout(function () {
+
+            var wb = XLSX.utils.book_new();
+            var table = document.querySelector("#example1");
+
+            var ws = XLSX.utils.table_to_sheet(table);
+            XLSX.utils.book_append_sheet(wb, ws, "All Data");
+
+            // Download Excel
+            XLSX.writeFile(wb, "AllTables.xlsx");
+
+            // Restore pagination
+            dataTable.page.len(1000).draw();
+            dataTable.page(currentPage).draw();
+
+        }, 300); // DataTables ko redraw time dena
+    });
+
+});
+</script>
+
+
+
     <script>
         document.querySelectorAll('.auto-submit').forEach(input => {
             input.addEventListener('input', function() {

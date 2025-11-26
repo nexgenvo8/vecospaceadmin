@@ -7,14 +7,14 @@ use App\Http\Middleware\CheckPermission;
 use Illuminate\Support\Facades\Route;
 
 // Public Routes
-Route::get('/', fn() => view('welcome'));
-Route::get('/login', fn() => view('login'))->name('loginform');
+// Route::get('/', fn() => view('welcome'));
+Route::get('/', fn() => view('login'))->name('loginform');
 Route::post('/adminlogin', [UserAdminController::class, 'login'])->name('submitLogin');
 Route::get('masteradmin/manage-faqs', fn() => view('manage_faq'));
 // Protected routes with AdminSessionTimeout middleware
 Route::middleware([AdminSessionTimeout::class])->group(function () {
 
-    Route::get('/dashboard', [UserAdminController::class, 'index'])->name('index');
+   
     Route::get('/logout', [UserAdminController::class, 'logout'])->name('logout');
     Route::get('/index', [UserAdminController::class, 'recordCount'])->name('index');
 
@@ -106,6 +106,7 @@ Route::middleware([AdminSessionTimeout::class])->group(function () {
     Route::middleware([CheckPermission::class . ':posts_list'])->group(function () {
         Route::get('posts/posts_list', [UserAdminController::class, 'postList'])->name('post_list');
         Route::post('posts/post/update', [UserAdminController::class, 'updatePostStatus'])->name('post.update');
+		Route::post('posts/post/delete', [UserAdminController::class, 'deletepost'])->name('post.delete');
     });
 
     // Contacts
@@ -164,8 +165,15 @@ Route::middleware([AdminSessionTimeout::class])->group(function () {
         Route::post('faqs/manage-faqspage-createed', [UserAdminController::class, 'faqCreatedPages'])->name('faqpages_createed');
         Route::post('pages/manage-faqspage-delete', [UserAdminController::class, 'deleteFaqPages'])->name('faqpages.delete');
     });
-
+Route::get('/register-export', [UserAdminController::class, 'export'])
+        ->name('register_export');
 
 });
+Route::get('/export-users', [UserAdminController::class, 'exportUsers'])->name('export.users');
+
+    
+
+
+
 
 

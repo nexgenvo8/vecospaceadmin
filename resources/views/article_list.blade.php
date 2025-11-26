@@ -95,7 +95,7 @@ $websiteurl = env('WEBSITE_URL');
                                                         <td>{{ $article['PostTitle'] ?? '' }}</td>
                                                         <td>{{ $article['UserDetail']['UserName'] ?? '' }}</td>
                                                         <td>{{ $article['UserDetail']['Email'] ?? '' }}</td>
-                                                        <td>
+                                                        <td style="white-space: nowrap">
                                                             {{ isset($article['dateAdded']) ? date('m/d/Y H:i:s', $article['dateAdded']) : 'N/A' }}
                                                         </td>
                                                         <td>

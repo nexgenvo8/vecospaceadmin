@@ -116,6 +116,7 @@
                                             @endforeach
                                         </tbody>
                                     </table>
+									
                                 </div>
 
                                 <!-- ✅ Add Department Modal -->

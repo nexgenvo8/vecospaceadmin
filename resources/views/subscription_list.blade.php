@@ -83,10 +83,22 @@ $websiteurl = env('WEBSITE_URL');
                 <div class="container-fluid">
                     <div class="row">
                         <div class="col-12">
+						<div class="d-flex justify-content-end mb-3">
+    <form action="{{ route('export.users') }}" method="GET" style="display: inline;">
+        @foreach(request()->except('page') as $key => $value)
+            @if($value)
+                <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+            @endif
+        @endforeach
+        <button type="submit" class="btn btn-success">Export All Data to Excel</button>
+    </form>
+</div>
                             <div class="card">
+							
                                 <div class="card-header">
                                     <h3 class="card-title">USER LIST</h3>
                                 </div>
+								
                                 <!-- /.card-header -->
                                 <div class="card-body">
                                     <form method="GET" action="{{ route('user_subscription_list') }}" class="mb-3"
@@ -160,6 +172,7 @@ $websiteurl = env('WEBSITE_URL');
                                                     <th style="white-space: nowrap" onclick="sortTable(6)">Industry</th>
                                                     <th style="white-space: nowrap" onclick="sortTable(7)">Email ID</th>
                                                     <th style="white-space: nowrap" onclick="sortTable(8)">Mobile</th>
+													<th style="white-space: nowrap" onclick="sortTable(8)">DOB</th>
                                                     <th style="white-space: nowrap" onclick="sortTable(9)">Resend Email
                                                     </th>
                                                     <th style="white-space: nowrap" onclick="sortTable(10)">Date</th>
@@ -192,9 +205,10 @@ $websiteurl = env('WEBSITE_URL');
                                                         <td>{{ $user['coursename'] ?? '-' }}</td>
                                                         <td>{{ $user['departmentname'] ?? '-' }}</td>
                                                         <td>{{ $user['passingyear'] ?? '-' }}</td>
-                                                        <td>{{ $user['industryId'] ?? '-' }}</td>
+                                                        <td>{{ $user['industryName'] ?? '-' }}</td>
                                                         <td>{{ $user['email'] ?? '-' }}</td>
                                                         <td>{{ $user['mobile'] ?? '-' }}</td>
+														<td style="white-space: nowrap;">{{ $user['dob'] ?? '-' }}</td>
                                                         <td>
                                                             <form action="{{ route('resend_email') }}" method="POST"
                                                                 style="display:inline;">
@@ -209,8 +223,8 @@ $websiteurl = env('WEBSITE_URL');
                                                             </form>
                                                         </td>
 
-                                                        <td>
-                                                            {{ isset($user['regDate']) ? \Carbon\Carbon::parse($user['regDate'])->setTimezone('Asia/Kolkata')->format('d-m-Y H:i:s') : '-' }}
+                                                        <td style="white-space: nowrap;">
+                                                            {{ isset($user['created_at']) ? \Carbon\Carbon::parse($user['created_at'])->setTimezone('Asia/Kolkata')->format('d-m-Y H:i:s') : '-' }}
                                                         </td>
 
                                                         <td>
@@ -224,6 +238,7 @@ $websiteurl = env('WEBSITE_URL');
                                                                     <span class="badge badge-danger">Inactive</span>
                                                                 @endif
                                                             </button>
+
 
                                                             <!-- Modal -->
                                                             <div class="modal fade"
@@ -512,19 +527,7 @@ $websiteurl = env('WEBSITE_URL');
     <script src="{{ asset('admin/ColorlibHQ-AdminLTE-bd4d9c7/dist/js/demo.js') }}"></script>
 
     <!-- Page specific script -->
-    <script>
-        $(function() {
-            $("#example1").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "buttons": ["copy", "csv", "excel", "pdf", "print", "colvis"]
-            }).buttons().container().appendTo('#example1_wrapper .col-md-6:eq(0)');
-
-            // Initialize tooltips (if needed)
-            $('[data-toggle="tooltip"]').tooltip();
-        });
-    </script>
+    
     <script>
         let sortDirection = {};
 
@@ -618,3 +621,126 @@ $websiteurl = env('WEBSITE_URL');
         transform: translateY(-2px);
     }
 </style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const exportButton = document.getElementById("exportAll");
+    
+    if (exportButton) {
+        exportButton.addEventListener("click", async function () {
+            const button = this;
+            const originalText = button.innerHTML;
+            button.innerHTML = 'Loading...';
+            button.disabled = true;
+
+            try {
+                let allUsers = [];
+                let page = 1;
+                let hasMore = true;
+
+                // Show progress
+                const progress = document.createElement('div');
+                progress.innerHTML = `Fetching data... Page ${page}`;
+                button.parentNode.appendChild(progress);
+
+                while (hasMore) {
+                    // Update progress
+                    progress.innerHTML = `Fetching page ${page}...`;
+                    
+                    // Server-side endpoint call karein
+                    const response = await fetch(`/export-all-users?page=${page}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+                    const data = await response.json();
+                    
+                    if (data.DataList && data.DataList.length > 0) {
+                        allUsers = allUsers.concat(data.DataList);
+                        
+                        progress.innerHTML = `Fetched ${allUsers.length} records so far...`;
+                        
+                        // Check if more pages
+                        if (page >= (data.last_page || 1) || data.DataList.length === 0) {
+                            hasMore = false;
+                        } else {
+                            page++;
+                        }
+                    } else {
+                        hasMore = false;
+                    }
+                    
+                    // Safety break
+                    if (page > 50) {
+                        hasMore = false;
+                        progress.innerHTML += ' (Stopped at 50 pages for safety)';
+                    }
+                }
+
+                progress.innerHTML = `Total ${allUsers.length} records fetched. Generating Excel...`;
+
+                // Export to Excel
+                if (allUsers.length > 0) {
+                    const ws = XLSX.utils.json_to_sheet(allUsers.map((user, index) => ({
+                        'Sr No': index + 1,
+                        'Full Name': `${user.firstName || ''} ${user.lastName || ''}`.trim(),
+                        'User Type': getUserType(user.userstype),
+                        'Course': user.coursename || '-',
+                        'Department': user.departmentname || '-',
+                        'Passing Year': user.passingyear || '-',
+                        'Industry': user.industryName || '-',
+                        'Email': user.email || '-',
+                        'Mobile': user.mobile || '-',
+                        'Date of Birth': user.dob || '-',
+                        'Status': user.activeYN === 'Y' ? 'Active' : 'Inactive',
+                        'Created Date': user.created_at ? 
+                            new Date(user.created_at).toLocaleString('en-IN', { 
+                                timeZone: 'Asia/Kolkata',
+                                day: '2-digit',
+                                month: '2-digit', 
+                                year: 'numeric',
+                                hour: '2-digit',
+                                minute: '2-digit',
+                                second: '2-digit'
+                            }) : '-'
+                    })));
+
+                    const wb = XLSX.utils.book_new();
+                    XLSX.utils.book_append_sheet(wb, ws, "Users");
+                    XLSX.writeFile(wb, `All_Users_${new Date().toISOString().split('T')[0]}.xlsx`);
+                    
+                    progress.innerHTML = `✅ Exported ${allUsers.length} records successfully!`;
+                    setTimeout(() => progress.remove(), 3000);
+                } else {
+                    progress.innerHTML = '❌ No data found to export!';
+                    setTimeout(() => progress.remove(), 3000);
+                }
+
+            } catch (error) {
+                console.error('Export error:', error);
+                alert('Export failed! Check console for details.');
+            } finally {
+                button.innerHTML = originalText;
+                button.disabled = false;
+            }
+        });
+    } else {
+        console.error('Export button not found!');
+    }
+});
+
+function getUserType(type) {
+    const types = {
+        1: 'Student', 
+        2: 'Faculty', 
+        3: 'Alumni',
+        4: 'Industry Professional', 
+        5: 'Career Enhancer / Service Provider'
+    };
+    return types[type] || 'Not Yet Selected';
+}
+</script>

@@ -87,6 +87,7 @@ $websiteurl = env('WEBSITE_URL');
                                                     {{-- <th>STATUS</th> --}}
                                                     <th>OPEN</th>
                                                     <th>POST</th>
+													<th> Action </th>
                                                 </tr>
                                             </thead>
                                             <tbody>
@@ -94,23 +95,26 @@ $websiteurl = env('WEBSITE_URL');
                                                     @foreach ($posts as $index => $p)
                                                         <tr>
                                                             <td>{{ $index + 1 }}</td>
-                                                            <td>{{ $p['PostTitle'] ?? 'N/A' }}</td>
+															@php
+																	$lines = explode("\n", $p['PostText'] ?? '');
+																	$limitedText = implode("\n", array_slice($lines, 0, 8));
+																@endphp
+																<td>{{ $limitedText }}</td>
+
                                                             <td>{{ $p['UserName'] ?? 'Unknown User' }}</td>
                                                             <td>{{ $p['Email'] ?? 'No Email' }}</td>
 
-                                                            <td>{{ $p['DateAdded'] ?? 'N/A' }}</td>
+                                                            <td style="white-space: nowrap;">{{ $p['DateAdded'] ?? 'N/A' }}</td>
                                                             {{-- <td>
                                                                 <!-- Status Button (Trigger Modal) -->
-                                                                <button type="button"
-                                                                    class="btn btn-link p-0 m-0 align-baseline"
-                                                                    data-toggle="modal"
-                                                                    data-target="#statusModal{{ $p['id'] }}">
-                                                                    @if ($p['status'] == 0)
-                                                                        <span class="badge badge-success">Active</span>
-                                                                    @else
-                                                                        <span class="badge badge-danger">Inactive</span>
-                                                                    @endif
-                                                                </button>
+                                                                <a href="#">
+																@if ($p['status'] == 0)
+																	<span class="badge badge-success">Active</span>
+																@else
+																	<span class="badge badge-danger">Inactive</span>
+																@endif
+															</a>
+
 
                                                                 <!-- Modal -->
                                                                 <div class="modal fade"
@@ -175,10 +179,14 @@ $websiteurl = env('WEBSITE_URL');
                                                             </td> --}}
 
                                                             <td>
-                                                                <a href="<?php echo $websiteurl; ?>single-post.html?postId=<?php echo encodeStr($p['id']); ?>&postType=<?php echo $p['PostType']; ?>"
-                                                                    class="btn btn-primary">Open</a>
-                                                            </td>
-                                                            {{-- <td>{{ $p['PostTypeName'] ?? 'N/A' }}</td> --}}
+																<a href="<?php echo $websiteurl; ?>single-post.html?postId=<?php echo encodeStr($p['id']); ?>&postType=<?php echo $p['PostType']; ?>"
+																   class="btn btn-primary"
+																   target="_blank">
+																   Open
+																</a>
+															</td>
+
+                                                            {{-- <td>{{ $p['PostTypeName'] ?? ' ' }}</td> --}}
                                                             <td>
                                                                 <!-- Status Button (Trigger Modal) -->
                                                                 <button type="button"
@@ -254,6 +262,16 @@ $websiteurl = env('WEBSITE_URL');
                                                                 </div>
                                                             </td>
 
+															<td>
+																<form action="{{ route('post.delete') }}" method="POST" 
+																	  onsubmit="return confirm('Are you sure you want to delete this post?');">
+																	@csrf
+																	<input type="hidden" name="id" value="{{ $p['id'] }}">
+																	<button type="submit" class="btn btn-danger btn-sm">
+																		Delete
+																	</button>
+																</form>
+															</td>
 
 
                                                         </tr>

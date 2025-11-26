@@ -46,7 +46,9 @@ class ApiService
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
             ])->post($url, $data); // Send POST request with JSON data
-
+\Log::info('API POST URL: ' . $this->baseUrl . $endpoint);
+\Log::info('API POST Response: ' . $response->body());
+\Log::info('API POST Status: ' . $response->status());
             if ($response->successful()) {
                 return $response->json();
             }
